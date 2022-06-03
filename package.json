@@ -1,0 +1,30 @@
+{
+  "name": "swr-openapi",
+  "version": "0.1.0",
+  "description": "Generate SWR hooks from OpenAPI schemas",
+  "license": "MIT",
+  "repository": "htunnicliff/swr-openapi",
+  "funding": "https://github.com/sponsors/htunnicliff",
+  "author": {
+    "name": "Hunter Tunnicliff",
+    "email": "hunter@tunnicliff.co"
+  },
+  "type": "module",
+  "exports": "./dist/index.js",
+  "engines": {
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "swr",
+    "openapi",
+    "rest",
+    "generator",
+    "client",
+    "fetch"
+  ],
+
+}
