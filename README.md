@@ -1,6 +1,8 @@
 <p align="center">
-  <h1 align="center">SWR OpenAPI</h1>
+  <h1 align="center">swr-openapi</h1>
 </p>
+
+<p align="center">Generate <a href="https://swr.vercel.app"><code>swr</code></a> hooks from <a href="https://swagger.io/specification/">OpenAPI</a> schemas</p>
 
 <p align="center">
   <a aria-label="npm" href="https://www.npmjs.com/package/swr-openapi">
