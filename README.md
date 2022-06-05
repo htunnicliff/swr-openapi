@@ -19,6 +19,39 @@
   </a> -->
 </p>
 
+## Installation
+
+For npm:
+
+```sh
+npm install swr-openapi
+```
+
+For yarn:
+
+```sh
+yarn add swr-openapi
+```
+
+For pnpm:
+
+```sh
+pnpm add swr-openapi
+```
+
+Additionally, please ensure you have the following peer dependencies installed:
+
+### Dependencies
+
+- `swr`
+- `react`
+- `react-dom`
+
+### Dev Dependencies
+
+- `openapi-typescript`
+- `typescript`
+
 ## How to Use
 
 First, follow the [directions for openapi-typescript](https://www.npmjs.com/package/openapi-typescript) to generate TypeScript types for a given API.
