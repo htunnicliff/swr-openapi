@@ -31,8 +31,8 @@ export class SWRApiFactory<Paths extends OpenapiPaths<Paths>> {
     // Create request
     const request = this.api.path(path).method("get").create();
     type Data = FetchReturnType<typeof request>;
-    type FetchError = FetchErrorType<typeof request>;
     type Args = FetchArgType<typeof request>;
+    type FetchError = FetchErrorType<typeof request>;
 
     // Configure cache key
     type CacheKey = [Path, Args];
