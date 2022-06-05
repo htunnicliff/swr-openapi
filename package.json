@@ -30,7 +30,8 @@
     "postinstall": "patch-package",
     "build": "del ./dist && tsc",
     "types:check": "tsc --noEmit",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "openapi-typescript-fetch": "^1.1.3"
