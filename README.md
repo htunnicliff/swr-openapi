@@ -43,14 +43,22 @@ Additionally, please ensure you have the following peer dependencies installed:
 
 ### Dependencies
 
-- `swr`
-- `react`
-- `react-dom`
+- `swr@^v2.0.0-beta.3` (currently, v2.0.0-beta.3 or higher is required)
+- `react@^18.0.0`
+- `react-dom@^18.0.0`
+
+```sh
+npm install swr@^v2.0.0-beta.3 react@^18.0.0 react-dom@^18.0.0
+```
 
 ### Dev Dependencies
 
-- `openapi-typescript`
-- `typescript`
+- `openapi-typescript@^5.4.0`
+- `typescript@^4.0.0`
+
+```sh
+npm install --save-dev openapi-typescript@^5.4.0 typescript@^4.0.0
+```
 
 ## How to Use
 
