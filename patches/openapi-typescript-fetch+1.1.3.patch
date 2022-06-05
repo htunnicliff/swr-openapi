@@ -1,0 +1,26 @@
+diff --git a/node_modules/openapi-typescript-fetch/dist/cjs/types.d.ts b/node_modules/openapi-typescript-fetch/dist/cjs/types.d.ts
+index 6c044e1..eaa4a6f 100644
+--- a/node_modules/openapi-typescript-fetch/dist/cjs/types.d.ts
++++ b/node_modules/openapi-typescript-fetch/dist/cjs/types.d.ts
+@@ -33,7 +33,7 @@ declare type _OpReturnType<T> = 200 extends keyof T ? T[200] : 201 extends keyof
+ export declare type OpReturnType<OP> = _OpReturnType<OpResponseTypes<OP>>;
+ declare type _OpDefaultReturnType<T> = 'default' extends keyof T ? T['default'] : unknown;
+ export declare type OpDefaultReturnType<OP> = _OpDefaultReturnType<OpResponseTypes<OP>>;
+-declare const never: unique symbol;
++export const never: unique symbol;
+ declare type _OpErrorType<T> = {
+     [S in Exclude<keyof T, 200 | 201>]: {
+         status: S extends 'default' ? typeof never : S;
+diff --git a/node_modules/openapi-typescript-fetch/dist/esm/types.d.ts b/node_modules/openapi-typescript-fetch/dist/esm/types.d.ts
+index 6c044e1..eaa4a6f 100644
+--- a/node_modules/openapi-typescript-fetch/dist/esm/types.d.ts
++++ b/node_modules/openapi-typescript-fetch/dist/esm/types.d.ts
+@@ -33,7 +33,7 @@ declare type _OpReturnType<T> = 200 extends keyof T ? T[200] : 201 extends keyof
+ export declare type OpReturnType<OP> = _OpReturnType<OpResponseTypes<OP>>;
+ declare type _OpDefaultReturnType<T> = 'default' extends keyof T ? T['default'] : unknown;
+ export declare type OpDefaultReturnType<OP> = _OpDefaultReturnType<OpResponseTypes<OP>>;
+-declare const never: unique symbol;
++export const never: unique symbol;
+ declare type _OpErrorType<T> = {
+     [S in Exclude<keyof T, 200 | 201>]: {
+         status: S extends 'default' ? typeof never : S;
