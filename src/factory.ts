@@ -5,20 +5,9 @@ import {
   FetchErrorType,
   FetchReturnType,
 } from "openapi-typescript-fetch";
-import {
-  FetchConfig,
-  OpenapiPaths,
-} from "openapi-typescript-fetch/dist/cjs/types";
+import type { FetchConfig, OnlyGet, OpenApiPaths } from "./types";
 
-type Gettable = {
-  get: unknown;
-};
-
-type OnlyGet<T> = {
-  [K in keyof T as T[K] extends Gettable ? K : never]: T[K];
-};
-
-export class SWRApiFactory<Paths extends OpenapiPaths<Paths>> {
+export class SWRApiFactory<Paths extends OpenApiPaths<Paths>> {
   constructor(config: FetchConfig, public api = OpenApiFetcher.for<Paths>()) {
     // Initialize API fetcher
     api.configure(config);
