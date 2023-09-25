@@ -2,7 +2,7 @@
   <h1 align="center">swr-openapi</h1>
 </p>
 
-<p align="center">Generate <a href="https://swr.vercel.app"><code>swr</code></a> hooks from <a href="https://swagger.io/specification/">OpenAPI</a> schemas</p>
+<p align="center">Generate <a href="https://swr.vercel.app"><code>swr</code></a> hooks using <a href="https://swagger.io/specification/">OpenAPI</a> schemas</p>
 
 <p align="center">
   <a aria-label="npm" href="https://www.npmjs.com/package/swr-openapi">
@@ -11,88 +11,97 @@
   <a aria-label="license" href="https://github.com/htunnicliff/swr-openapi/blob/master/LICENSE">
     <img alt="license" src="https://img.shields.io/github/license/htunnicliff/swr-openapi.svg?style=for-the-badge&labelColor=000000">
   </a>
-  <!-- <a aria-label="tests" href="https://github.com/htunnicliff/swr-openapi/actions?query=workflow%3ATest">
-    <img alt="tests" src="https://img.shields.io/github/workflow/status/htunnicliff/swr-openapi/Test?style=for-the-badge&labelColor=000000&label=Tests">
-  </a>
-  <a aria-label="coverage" href="https://codecov.io/gh/htunnicliff/swr-openapi/">
-    <img alt="Codecov" src="https://img.shields.io/codecov/c/github/htunnicliff/swr-openapi?style=for-the-badge&labelColor=000000&token=XI7G8L08TY">
-  </a> -->
 </p>
 
 ## Installation
 
-For npm:
-
 ```sh
-npm install swr-openapi
+npm install swr-openapi swr
+npm install --save-dev openapi-typescript
 ```
 
-For yarn:
+## Setup
+
+For each Open API schema you want to use, run the following command to transform each schema into TypeScript types:
 
 ```sh
-yarn add swr-openapi
+npx openapi-typescript "https://sandwiches.example/openapi/json" --output ./types/sandwich-schema.ts
 ```
 
-For pnpm:
+Once you have types for your API saved, create an API client:
 
-```sh
-pnpm add swr-openapi
+```ts
+// sandwich-api.ts
+import type * as SandwichSchema from "./types/sandwich-schema";
+
+// 👇👇👇
+export const sandwichAPI = createClient<SandwichSchema.paths>({
+  baseUrl: "https://sandwiches.example",
+});
 ```
 
-Additionally, please ensure you have the following peer dependencies installed:
+Now, initialize a hook factory for that API:
 
-### Dependencies
+```ts
+// sandwich-api.ts
+import { makeHookFactory } from "swr-openapi";
+import type * as SandwichSchema from "./types/sandwich-schema";
 
-- `swr@^v2.0.0-beta.3` (currently, v2.0.0-beta.3 or higher is required)
-- `react@^18.0.0`
-- `react-dom@^18.0.0`
-
-```sh
-npm install swr@^v2.0.0-beta.3 react@^18.0.0 react-dom@^18.0.0
-```
-
-### Dev Dependencies
-
-- `openapi-typescript@^5.4.0`
-- `typescript@^4.0.0`
-
-```sh
-npm install --save-dev openapi-typescript@^5.4.0 typescript@^4.0.0
-```
-
-## How to Use
-
-First, follow the [directions for openapi-typescript](https://www.npmjs.com/package/openapi-typescript) to generate TypeScript types for a given API.
-
-In the following example, we will assume that types for a "Pet Store" API have been generated at `./types/pet-store.d.ts`.
-
-```tsx
-import { SWRApiFactory } from "swr-openapi";
-import { Paths as PetStorePaths }from "./types/pet-store";
-
-// Create factory for the API
-const petStoreService = new SWRApiFactory<PetStorePaths>({
-  baseURL: "https://example.com/api/petstore",
+export const sandwichAPI = createClient<SandwichSchema.paths>({
+  baseUrl: "https://sandwiches.example",
 });
 
-// Create SWR hooks for specific endponts
-export [usePets] = petStoreService.makeHook("/pets");
-export [usePet] = petStoreService.makeHook("/pets/{petId}");
-export [usePetImages] = petStoreService.makeHook("/pets/{petId}/images");
-
-// Call hooks with arguments
-function PetList() {
-  const { data: pets } = usePets();
-
-  // Render list of pets (`pets` is fully type-safe!)
-}
-
-function PetProfile() {
-  const { data: pet } = usePet({ petId: 'pet-123' });
-  const { data: petImages } = usePetImages(); // <-- Type Error: Missing `petId` argument
-
-  // Render pet profile
-}
+// 👇👇👇
+const makeHook = makeHookFactory<SandwichSchema.paths>(sandwichAPI);
 ```
 
-The `SWRApiFactory` class accepts all arguments that are supported by [openapi-typescript-fetch](https://www.npmjs.com/package/openapi-typescript-fetch) in addition to other library features like middleware and typed error handling.
+> **Info**
+> When working with multiple APIs, you can customize the name of each hook factory to suite your application:
+>
+> ```ts
+> const fooAPI = createClient(...);
+> const makeFooHook = makeHookFactory(fooAPI);
+>
+> const barAPI = createClient(...);
+> const makeBarHook = makeHookFactory(barAPI);
+> ```
+
+With setup now out of the way, you can define the actual hooks used by your application:
+
+```ts
+// sandwich-api.ts
+import { makeHookFactory } from "swr-openapi";
+import type * as SandwichSchema from "./types/sandwich-schema";
+
+export const sandwichAPI = createClient<SandwichSchema.paths>({
+  baseUrl: "https://sandwiches.example",
+});
+
+const makeHook = makeHookFactory<SandwichSchema.paths>(sandwichAPI);
+
+// 👇👇👇
+export const useSandwichesForUser = makeHook("/user/{userId}/sandwiches");
+export const useSandwiches = makeHook("/sandwiches");
+```
+
+Now, you can call the hooks elsewhere in your application:
+
+```tsx
+import { useSandwiches, useSandwichesForUser } from "./sandwich-api";
+
+export function UserSandwiches() {
+  const { data: sandwiches } = useSandwiches({
+    params: {
+      query: { limit: 10 },
+    },
+  });
+
+  const { data: userSandwiches } = useSandwichesForUser({
+    params: {
+      path: { userId: "user-123" },
+    },
+  });
+
+  // ...
+}
+```

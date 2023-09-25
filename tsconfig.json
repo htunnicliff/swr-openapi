@@ -1,16 +1,11 @@
 {
   "compilerOptions": {
-    "declaration": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
-    "noUnusedLocals": true,
-    "lib": ["DOM", "ESNext"],
-    "module": "CommonJS",
+    "module": "esnext",
+    "target": "ESNext",
+    "moduleResolution": "bundler",
     "outDir": "dist",
     "strict": true,
-    "target": "ES5",
-    "moduleResolution": "node"
+    "skipLibCheck": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
