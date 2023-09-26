@@ -4,15 +4,13 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-dependencies:
-  openapi-fetch:
-    specifier: ^0.7.6
-    version: 0.7.6
-
 devDependencies:
   '@types/node':
     specifier: 20.7.0
     version: 20.7.0
+  openapi-fetch:
+    specifier: 0.7.6
+    version: 0.7.6
   openapi-typescript:
     specifier: 5.4.1
     version: 5.4.1
@@ -708,10 +706,11 @@ packages:
     resolution: {integrity: sha512-TmHTmzMqNmVUlRasfaSVsOYnFHHu0L31VGxbk75rk9P7RfOj70kc+Tiuu548koOpB5zs8yiUwW5wsYjeQifHcA==}
     dependencies:
       openapi-typescript-helpers: 0.0.2
-    dev: false
+    dev: true
 
   /openapi-typescript-helpers@0.0.2:
     resolution: {integrity: sha512-r5Z4tlGa2l6jYO1ENT9Giqo/ZWzWPmsYUR41O01kjYr7vg4iBFaMh0W0g8Ef72SpeU2F+TY6CAdKxTv7aq+WXA==}
+    dev: true
 
   /openapi-typescript@5.4.1:
     resolution: {integrity: sha512-AGB2QiZPz4rE7zIwV3dRHtoUC/CWHhUjuzGXvtmMQN2AFV8xCTLKcZUHLcdPQmt/83i22nRE7+TxXOXkK+gf4Q==}
