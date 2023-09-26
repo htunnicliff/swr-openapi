@@ -16,7 +16,7 @@
 ## Installation
 
 ```sh
-npm install swr-openapi swr
+npm install swr openapi-fetch swr-openapi
 npm install --save-dev openapi-typescript
 ```
 
