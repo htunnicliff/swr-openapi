@@ -34,7 +34,6 @@ Once you have types for your API saved, create an API client:
 // sandwich-api.ts
 import type * as SandwichSchema from "./types/sandwich-schema";
 
-// 👇👇👇
 export const sandwichAPI = createClient<SandwichSchema.paths>({
   baseUrl: "https://sandwiches.example",
 });
