@@ -24,6 +24,7 @@
     "fetch"
   ],
   "scripts": {
+    "prepublish": "npm run build && npm run types:check && npm run format:check",
     "build": "tsup",
     "types:check": "tsc --noEmit",
     "format": "prettier --write .",
