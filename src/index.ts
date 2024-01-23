@@ -4,7 +4,8 @@ import type { FilterKeys, PathsWithMethod } from "openapi-typescript-helpers";
 import useSWR, { type SWRConfiguration } from "swr";
 
 export function makeHookFactory<Paths extends {}>(
-  api: ReturnType<typeof createClient<Paths>>
+  api: ReturnType<typeof createClient<Paths>>,
+  keyPrefix: string
 ) {
   // Define hook factory with typed paths
   return function hookFactory<Path extends PathsWithMethod<Paths, "get">>(
@@ -20,13 +21,14 @@ export function makeHookFactory<Paths extends {}>(
       fetchOptions: Options,
       swrConfig?: SWRConfiguration<Response["data"], Response["error"]>
     ) {
-      type Key = [Path, Options];
+      type Key = [typeof keyPrefix, Path, Options];
 
       return useSWR<Response["data"], Response["error"], Key>(
         // SWR key is based on the path and fetch options
-        [path, fetchOptions],
+        // keyPrefix keeps each API's cache separate in case there are path collisions
+        [keyPrefix, path, fetchOptions],
         // Fetcher function
-        async ([url, options]) => {
+        async ([_, url, options]) => {
           const { data, error } = await api.GET(url, options);
           if (error) {
             throw error;
