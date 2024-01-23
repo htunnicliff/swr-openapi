@@ -1,6 +1,6 @@
 {
   "name": "swr-openapi",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Generate SWR hooks from OpenAPI schemas",
   "license": "MIT",
   "repository": "htunnicliff/swr-openapi",
