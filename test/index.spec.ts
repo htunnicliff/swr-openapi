@@ -38,7 +38,7 @@ const { data: suspenseData } = useOrder(
       path: { orderId: 1 },
     },
   },
-  { suspense: true }
+  { suspense: true },
 );
 
 expectTypeOf(suspenseData).toEqualTypeOf<OrderSuccessResponse>();

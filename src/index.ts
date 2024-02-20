@@ -12,12 +12,12 @@ import useSWR, { type SWRConfiguration } from "swr";
 
 export function makeHookFactory<Paths extends {}>(
   api: ReturnType<typeof createClient<Paths>>,
-  keyPrefix: string
+  keyPrefix: string,
 ) {
   // Define hook factory with typed paths
   return function hookFactory<Path extends PathsWithMethod<Paths, "get">>(
     path: Path,
-    swrConfigDefaults?: SWRConfiguration
+    swrConfigDefaults?: SWRConfiguration,
   ) {
     // Define hook that is returned for consumers with typed options
     // based on the given path
@@ -54,7 +54,7 @@ export function makeHookFactory<Paths extends {}>(
         {
           ...swrConfigDefaults,
           ...swrConfig,
-        }
+        },
       );
     }
 
