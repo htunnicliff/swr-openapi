@@ -1,6 +1,13 @@
-import type { FetchOptions } from "openapi-fetch";
 import type createClient from "openapi-fetch";
-import type { FilterKeys, PathsWithMethod } from "openapi-typescript-helpers";
+import type { FetchOptions, ParseAsResponse } from "openapi-fetch";
+import type {
+  ErrorResponse,
+  FilterKeys,
+  MediaType,
+  PathsWithMethod,
+  ResponseObjectMap,
+  SuccessResponse,
+} from "openapi-typescript-helpers";
 import useSWR, { type SWRConfiguration } from "swr";
 
 export function makeHookFactory<Paths extends {}>(
@@ -15,25 +22,32 @@ export function makeHookFactory<Paths extends {}>(
     // Define hook that is returned for consumers with typed options
     // based on the given path
     function useHook<
-      Options extends FetchOptions<FilterKeys<Paths[Path], "get">>,
-      Response extends Awaited<ReturnType<typeof api.GET<Path>>>
-    >(
-      fetchOptions: Options | null | undefined,
-      swrConfig?: SWRConfiguration<Response["data"], Response["error"]>
-    ) {
+      Req extends FilterKeys<Paths[Path], "get">,
+      Options extends FetchOptions<Req>,
+      Data extends ParseAsResponse<
+        FilterKeys<SuccessResponse<ResponseObjectMap<Req>>, MediaType>,
+        Options
+      >,
+      Error extends FilterKeys<
+        ErrorResponse<ResponseObjectMap<Req>>,
+        MediaType
+      >,
+    >(fetchOptions: Options | null, swrConfig?: SWRConfiguration<Data, Error>) {
       type Key = [typeof keyPrefix, Path, Options] | null;
 
-      return useSWR<Response["data"], Response["error"], Key>(
+      return useSWR<Data, Error, Key>(
         // SWR key is based on the path and fetch options
         // keyPrefix keeps each API's cache separate in case there are path collisions
         fetchOptions ? [keyPrefix, path, fetchOptions] : null,
         // Fetcher function
+        // @ts-expect-error - This functions correctly, but we don't need to fix its types
+        // types since we rely on the generics passed to useSWR instead
         async ([_, url, options]) => {
-          const { data, error } = await api.GET(url, options);
-          if (error) {
-            throw error;
+          const res = await api.GET(url, options);
+          if (res.error) {
+            throw res.error;
           }
-          return data;
+          return res.data;
         },
         // SWR config
         {
