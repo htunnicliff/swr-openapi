@@ -18,15 +18,15 @@ export function makeHookFactory<Paths extends {}>(
       Options extends FetchOptions<FilterKeys<Paths[Path], "get">>,
       Response extends Awaited<ReturnType<typeof api.GET<Path>>>
     >(
-      fetchOptions: Options,
+      fetchOptions: Options | null | undefined,
       swrConfig?: SWRConfiguration<Response["data"], Response["error"]>
     ) {
-      type Key = [typeof keyPrefix, Path, Options];
+      type Key = [typeof keyPrefix, Path, Options] | null;
 
       return useSWR<Response["data"], Response["error"], Key>(
         // SWR key is based on the path and fetch options
         // keyPrefix keeps each API's cache separate in case there are path collisions
-        [keyPrefix, path, fetchOptions],
+        fetchOptions ? [keyPrefix, path, fetchOptions] : null,
         // Fetcher function
         async ([_, url, options]) => {
           const { data, error } = await api.GET(url, options);
