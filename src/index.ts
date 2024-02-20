@@ -32,10 +32,11 @@ export function makeHookFactory<Paths extends {}>(
         ErrorResponse<ResponseObjectMap<Req>>,
         MediaType
       >,
-    >(fetchOptions: Options | null, swrConfig?: SWRConfiguration<Data, Error>) {
+      Config extends SWRConfiguration<Data, Error>,
+    >(fetchOptions: Options | null, swrConfig?: Config) {
       type Key = [typeof keyPrefix, Path, Options] | null;
 
-      return useSWR<Data, Error, Key>(
+      return useSWR<Data, Error, Key, Config>(
         // SWR key is based on the path and fetch options
         // keyPrefix keeps each API's cache separate in case there are path collisions
         fetchOptions ? [keyPrefix, path, fetchOptions] : null,
