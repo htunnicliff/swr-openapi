@@ -8,21 +8,20 @@ import type {
   ResponseObjectMap,
   SuccessResponse,
 } from "openapi-typescript-helpers";
-import useSWR, { type SWRConfiguration } from "swr";
+import useSWR, { useSWRConfig, type SWRConfiguration } from "swr";
 
 export function makeHookFactory<Paths extends {}>(
   api: ReturnType<typeof createClient<Paths>>,
   keyPrefix: string,
 ) {
   // Define hook factory with typed paths
-  return function hookFactory<Path extends PathsWithMethod<Paths, "get">>(
-    path: Path,
-    swrConfigDefaults?: SWRConfiguration,
-  ) {
+  return function hookFactory<
+    Path extends PathsWithMethod<Paths, "get">,
+    Req extends FilterKeys<Paths[Path], "get">,
+  >(path: Path, swrConfigDefaults?: SWRConfiguration) {
     // Define hook that is returned for consumers with typed options
     // based on the given path
     function useHook<
-      Req extends FilterKeys<Paths[Path], "get">,
       Options extends FetchOptions<Req>,
       Data extends ParseAsResponse<
         FilterKeys<SuccessResponse<ResponseObjectMap<Req>>, MediaType>,
@@ -57,6 +56,13 @@ export function makeHookFactory<Paths extends {}>(
         },
       );
     }
+
+    useHook.getKey = (fetchOptions: FetchOptions<Req>) =>
+      [keyPrefix, path, fetchOptions] as [
+        typeof keyPrefix,
+        Path,
+        typeof fetchOptions,
+      ];
 
     return useHook;
   };
