@@ -1,25 +1,22 @@
 import { expectTypeOf } from "expect-type";
 import createClient from "openapi-fetch";
 import { SuccessResponseJSON } from "openapi-typescript-helpers";
-import useSWR from "swr";
-import useSWRInfinite from "swr/infinite";
 import type { paths } from "../generated/petstore";
-import { makeHookFactory, makeSWRHelper } from "../src/index";
+import { createHooks } from "../src/index";
 
 const petStoreApi = createClient<paths>({
   baseUrl: "https://petstore3.swagger.io/api/v3",
 });
 
-const petStoreHook = makeHookFactory<paths>(petStoreApi, "pet-store");
-
-const useOrder = petStoreHook("/store/order/{orderId}");
+const { use: usePetStore, useInfinite: usePetStoreInfinite } =
+  createHooks<paths>(petStoreApi, "pet-store");
 
 type OrderSuccessResponse = SuccessResponseJSON<
   paths["/store/order/{orderId}"]["get"]
 >;
 
 // Test regular hook
-const { data } = useOrder({
+const { data } = usePetStore("/store/order/{orderId}", {
   params: {
     path: { orderId: 1 },
   },
@@ -33,10 +30,13 @@ if (data) {
 }
 
 // Test suspense hook
-const { data: suspenseData } = useOrder(
+const { data: suspenseData } = usePetStore(
+  "/store/order/{orderId}",
   {
     params: {
-      path: { orderId: 1 },
+      path: {
+        orderId: 1,
+      },
     },
   },
   { suspense: true },
@@ -44,28 +44,19 @@ const { data: suspenseData } = useOrder(
 
 expectTypeOf(suspenseData).toEqualTypeOf<OrderSuccessResponse>();
 
-const swrPetStore = makeSWRHelper(petStoreApi, "pet-store");
-
-swrPetStore("/store/order/{orderId}", {
-  params: { path: { orderId: 1 } },
+usePetStore("/store/order/{orderId}", {
+  params: {
+    path: {
+      orderId: 1,
+    },
+  },
 });
 
-swrPetStore("/store/order/{orderId}", () => ({
-  params: { path: { orderId: 1 } },
-}));
-
-useSWR(
-  ...swrPetStore("/store/order/{orderId}", {
-    params: { path: { orderId: 1 } },
-  }),
-);
-
-useSWRInfinite(
-  ...swrPetStore("/pet/findByStatus", (index, previous) => ({
-    params: {
-      query: {
-        status: "available",
-      },
+usePetStoreInfinite("/store/order/{orderId}", (index, previous) => ({
+  params: {
+    path: {
+      orderId: 1,
     },
-  })),
-);
+    query: {},
+  },
+}));
