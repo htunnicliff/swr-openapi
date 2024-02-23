@@ -1,5 +1,9 @@
 import type createClient from "openapi-fetch";
-import type { FetchOptions, ParseAsResponse } from "openapi-fetch";
+import type {
+  FetchOptions,
+  FetchResponse,
+  ParseAsResponse,
+} from "openapi-fetch";
 import type {
   ErrorResponse,
   FilterKeys,
@@ -8,7 +12,8 @@ import type {
   ResponseObjectMap,
   SuccessResponse,
 } from "openapi-typescript-helpers";
-import useSWR, { useSWRConfig, type SWRConfiguration } from "swr";
+import useSWR, { Fetcher, type SWRConfiguration } from "swr";
+import { SWRInfiniteKeyLoader } from "swr/infinite";
 
 export function makeHookFactory<Paths extends {}>(
   api: ReturnType<typeof createClient<Paths>>,
@@ -66,4 +71,49 @@ export function makeHookFactory<Paths extends {}>(
 
     return useHook;
   };
+}
+
+export function makeSWRHelper<Paths extends {}>(
+  api: ReturnType<typeof createClient<Paths>>,
+  keyPrefix: string,
+) {
+  function swrHelper<
+    Path extends PathsWithMethod<Paths, "get">,
+    Req extends FilterKeys<Paths[Path], "get">,
+    Options extends FetchOptions<Req>,
+    Data extends NonNullable<FetchResponse<Req, Options>["data"]>,
+    Key extends [string, Path, Options],
+    OptionsInput extends
+      | Options
+      | ((index: number, previousPageData: Data | null) => Options | null),
+  >(
+    path: Path,
+    optionsOrFn: OptionsInput,
+  ): OptionsInput extends Options
+    ? [Key, Fetcher<Data, Key>]
+    : [SWRInfiniteKeyLoader<Data, Key>, Fetcher<Data, Key>] {
+    const key =
+      typeof optionsOrFn === "function"
+        ? (index: number, previousPageData: Data | null) => {
+            const options = optionsOrFn(index, previousPageData);
+            if (options === null) {
+              return null;
+            }
+            return [keyPrefix, path, options] as const;
+          }
+        : ([keyPrefix, path, optionsOrFn] as const);
+
+    const fetcher = async ([, url, init]: Key) => {
+      const { data, error } = await api.GET(url, init);
+      if (error) {
+        throw error;
+      }
+      return data!;
+    };
+
+    // @ts-expect-error - TODO: Come back to make the types sound
+    return [key, fetcher] as const;
+  }
+
+  return swrHelper;
 }
