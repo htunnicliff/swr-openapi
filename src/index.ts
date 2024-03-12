@@ -12,14 +12,11 @@ import useSWR, { type SWRConfiguration } from "swr";
 import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
 import type { PartialDeep } from "type-fest";
 
+let matchKeyComparator: ((a: object, b: object) => boolean) | undefined;
+
 export function createHooks<Paths extends {}>(
   api: ReturnType<typeof createClient<Paths>>,
   keyPrefix: string,
-  {
-    matchKeyComparator,
-  }: {
-    matchKeyComparator: (a: object, b: object) => boolean;
-  },
 ) {
   function use<
     Path extends PathsWithMethod<Paths, "get">,
@@ -109,7 +106,7 @@ export function createHooks<Paths extends {}>(
           // Matching path
           keyPath === path &&
           // Matching options
-          (pathOptions ? matchKeyComparator(keyOptions, pathOptions) : true)
+          (pathOptions ? matchKeyComparator!(keyOptions, pathOptions) : true)
         );
       }
 
@@ -120,6 +117,20 @@ export function createHooks<Paths extends {}>(
   return {
     use,
     useInfinite,
-    matchKey,
+    get matchKey() {
+      if (!matchKeyComparator) {
+        throw new Error(
+          "Match key comparison is not enabled. Please call enableMatchKeyComparison with a comparator function.",
+        );
+      }
+
+      return matchKey;
+    },
   };
+}
+
+export function enableMatchKeyComparison(
+  comparator: typeof matchKeyComparator,
+) {
+  matchKeyComparator = comparator;
 }

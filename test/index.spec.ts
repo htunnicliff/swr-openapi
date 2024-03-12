@@ -13,9 +13,7 @@ const {
   use: usePetStore,
   useInfinite: usePetStoreInfinite,
   matchKey,
-} = createHooks<paths>(petStoreApi, "pet-store", {
-  matchKeyComparator: () => true,
-});
+} = createHooks<paths>(petStoreApi, "pet-store");
 
 type OrderSuccessResponse = SuccessResponseJSON<
   paths["/store/order/{orderId}"]["get"]
