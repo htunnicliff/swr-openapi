@@ -12,7 +12,18 @@ import useSWR, { type SWRConfiguration } from "swr";
 import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
 import type { PartialDeep } from "type-fest";
 
-let matchKeyComparator: ((a: object, b: object) => boolean) | undefined;
+export type SwrOpenApiConfiguration = {
+  matchKeyComparator?: (a: object, b: object) => boolean;
+};
+
+const configuration: SwrOpenApiConfiguration = {};
+
+/**
+ * Apply an optional configuration to the library at runtime
+ */
+export function applySwrOpenApiConfiguration(config: SwrOpenApiConfiguration) {
+  Object.assign(configuration, config);
+}
 
 export function createHooks<Paths extends {}>(
   api: ReturnType<typeof createClient<Paths>>,
@@ -98,6 +109,12 @@ export function createHooks<Paths extends {}>(
     Options extends FetchOptions<Req>,
   >(path: Path, pathOptions?: PartialDeep<Options>) {
     return (key: unknown): boolean => {
+      if (!configuration.matchKeyComparator) {
+        throw new Error(
+          "Define a `matchKeyComparator` by calling `applySwrOpenApiConfiguration` in order to use `matchKey`",
+        );
+      }
+
       if (Array.isArray(key)) {
         const [prefix, keyPath, keyOptions] = key;
         return (
@@ -106,7 +123,9 @@ export function createHooks<Paths extends {}>(
           // Matching path
           keyPath === path &&
           // Matching options
-          (pathOptions ? matchKeyComparator!(keyOptions, pathOptions) : true)
+          (pathOptions
+            ? configuration.matchKeyComparator(keyOptions, pathOptions)
+            : true)
         );
       }
 
@@ -114,25 +133,19 @@ export function createHooks<Paths extends {}>(
     };
   }
 
-  const localMatchKeyComparator = matchKeyComparator;
+  const localConfig = configuration;
 
   return {
     use,
     useInfinite,
     get matchKey() {
-      if (!localMatchKeyComparator) {
+      if (!localConfig.matchKeyComparator) {
         throw new Error(
-          "Match key comparison is not enabled. Please call enableMatchKeyComparison with a comparator function.",
+          "Define a `matchKeyComparator` by calling `applySwrOpenApiConfiguration` in order to use `matchKey`",
         );
       }
 
       return matchKey;
     },
   };
-}
-
-export function enableMatchKeyComparison(
-  comparator: typeof matchKeyComparator,
-) {
-  matchKeyComparator = comparator;
 }
