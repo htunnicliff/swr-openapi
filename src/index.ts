@@ -114,11 +114,13 @@ export function createHooks<Paths extends {}>(
     };
   }
 
+  const localMatchKeyComparator = matchKeyComparator;
+
   return {
     use,
     useInfinite,
     get matchKey() {
-      if (!matchKeyComparator) {
+      if (!localMatchKeyComparator) {
         throw new Error(
           "Match key comparison is not enabled. Please call enableMatchKeyComparison with a comparator function.",
         );
