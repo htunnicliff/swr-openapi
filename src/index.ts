@@ -1,4 +1,3 @@
-import { isMatch } from "lodash-es";
 import type createClient from "openapi-fetch";
 import type { FetchOptions, ParseAsResponse } from "openapi-fetch";
 import type {
@@ -16,6 +15,11 @@ import type { PartialDeep } from "type-fest";
 export function createHooks<Paths extends {}>(
   api: ReturnType<typeof createClient<Paths>>,
   keyPrefix: string,
+  {
+    matchKeyComparator,
+  }: {
+    matchKeyComparator: (a: object, b: object) => boolean;
+  },
 ) {
   function use<
     Path extends PathsWithMethod<Paths, "get">,
@@ -105,7 +109,7 @@ export function createHooks<Paths extends {}>(
           // Matching path
           keyPath === path &&
           // Matching options
-          (pathOptions ? isMatch(keyOptions, pathOptions) : true)
+          (pathOptions ? matchKeyComparator(keyOptions, pathOptions) : true)
         );
       }
 
