@@ -1,3 +1,4 @@
+import { isMatch } from "lodash-es";
 import type createClient from "openapi-fetch";
 import type { FetchOptions, ParseAsResponse } from "openapi-fetch";
 import type {
@@ -10,6 +11,7 @@ import type {
 } from "openapi-typescript-helpers";
 import useSWR, { type SWRConfiguration } from "swr";
 import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
+import type { PartialDeep } from "type-fest";
 
 export function createHooks<Paths extends {}>(
   api: ReturnType<typeof createClient<Paths>>,
@@ -89,8 +91,31 @@ export function createHooks<Paths extends {}>(
     );
   }
 
+  function matchKey<
+    Path extends PathsWithMethod<Paths, "get">,
+    Req extends FilterKeys<Paths[Path], "get">,
+    Options extends FetchOptions<Req>,
+  >(path: Path, pathOptions?: PartialDeep<Options>) {
+    return (key: unknown): boolean => {
+      if (Array.isArray(key)) {
+        const [prefix, keyPath, keyOptions] = key;
+        return (
+          // Matching prefix
+          prefix === keyPrefix &&
+          // Matching path
+          keyPath === path &&
+          // Matching options
+          (pathOptions ? isMatch(keyOptions, pathOptions) : true)
+        );
+      }
+
+      return false;
+    };
+  }
+
   return {
     use,
     useInfinite,
+    matchKey,
   };
 }
