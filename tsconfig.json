@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "module": "esnext",
     "target": "ESNext",
-    "moduleResolution": "bundler",
+    "module": "ES2020",
+    "moduleResolution": "Node",
     "outDir": "dist",
     "strict": true,
     "skipLibCheck": true
