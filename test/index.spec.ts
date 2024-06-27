@@ -67,6 +67,5 @@ usePetStoreInfinite("/store/order/{orderId}", (index, previous) => ({
     path: {
       orderId: 1,
     },
-    query: {},
   },
 }));
