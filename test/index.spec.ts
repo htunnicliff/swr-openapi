@@ -9,15 +9,17 @@ const petStoreApi = createClient<paths>({
   baseUrl: "https://petstore3.swagger.io/api/v3",
 });
 
+type OrderSuccessResponse = SuccessResponseJSON<
+  paths["/store/order/{orderId}"]["get"]
+>;
+
+expectTypeOf<OrderSuccessResponse>().not.toBeNever();
+
 const {
   use: usePetStore,
   useInfinite: usePetStoreInfinite,
   matchKey,
 } = createHooks<paths>(petStoreApi, "pet-store");
-
-type OrderSuccessResponse = SuccessResponseJSON<
-  paths["/store/order/{orderId}"]["get"]
->;
 
 mutate(
   matchKey("/store/order/{orderId}", { params: { path: { orderId: 1 } } }),
