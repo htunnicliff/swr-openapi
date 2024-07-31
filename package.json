@@ -3,7 +3,10 @@
   "version": "4.0.1",
   "description": "Generate SWR hooks from OpenAPI schemas",
   "license": "MIT",
-  "repository": "htunnicliff/swr-openapi",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/htunnicliff/swr-openapi.git"
+  },
   "funding": "https://github.com/sponsors/htunnicliff",
   "author": {
     "name": "Hunter Tunnicliff"
