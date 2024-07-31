@@ -35,7 +35,7 @@ Then, create an [openapi-fetch](https://openapi-ts.pages.dev/openapi-fetch/) cli
 <!-- prettier-ignore -->
 ```ts
 // sandwich-api.ts
-import { createClient } from "openapi-fetch";
+import createClient from "openapi-fetch";
 import { createHooks } from "swr-openapi";
 import type * as SandwichesSchema from "./types/sandwich-schema";
 
