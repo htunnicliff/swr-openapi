@@ -1,3 +1,5 @@
+"use client";
+
 import type createClient from "openapi-fetch";
 import type { FetchOptions, ParseAsResponse } from "openapi-fetch";
 import type {
