@@ -3,6 +3,7 @@
     "target": "ESNext",
     "module": "ES2020",
     "moduleResolution": "Node",
+    "noUncheckedIndexedAccess": true,
     "outDir": "dist",
     "strict": true,
     "skipLibCheck": true

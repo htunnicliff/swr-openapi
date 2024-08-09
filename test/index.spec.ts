@@ -2,7 +2,7 @@ import { expectTypeOf } from "expect-type";
 import createClient from "openapi-fetch";
 import { SuccessResponseJSON } from "openapi-typescript-helpers";
 import type { paths } from "../generated/petstore";
-import { createHooks } from "../src/index";
+import { createHooks, RequestTypes } from "../src/index";
 import { mutate } from "swr";
 
 const petStoreApi = createClient<paths>({
@@ -71,3 +71,10 @@ usePetStoreInfinite("/store/order/{orderId}", (index, previous) => ({
     },
   },
 }));
+
+type Req = RequestTypes<paths, "/store/order/{orderId}">;
+
+expectTypeOf<Req["Data"]>().toEqualTypeOf<OrderSuccessResponse>();
+expectTypeOf<
+  Parameters<NonNullable<Req["SWRConfig"]["onSuccess"]>>[0]
+>().toEqualTypeOf<OrderSuccessResponse>();
