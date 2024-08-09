@@ -161,10 +161,10 @@ export type RequestTypes<
   Data = SuccessResponseJSON<Req>,
   Error = ErrorResponseJSON<Req>,
   Params = Req extends { parameters: infer P } ? P : never,
-  PathParams = Params extends { path: infer P } ? P : never,
-  QueryParams = Params extends { query: infer Q } ? Q : never,
-  HeaderParams = Params extends { header: infer H } ? H : never,
-  CookieParams = Params extends { cookie: infer C } ? C : never,
+  PathParams = Params extends { path?: infer P } ? P : never,
+  QueryParams = Params extends { query?: infer Q } ? Q : never,
+  HeaderParams = Params extends { header?: infer H } ? H : never,
+  CookieParams = Params extends { cookie?: infer C } ? C : never,
   SWRConfig = SWRConfiguration<Data, Error>,
 > = {
   Data: Data;
