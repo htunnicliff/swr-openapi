@@ -1,36 +1,36 @@
-import useSWR from "swr";
+import useSWRImmutable from "swr/immutable";
 import { configureBaseQueryHook } from "./query-base";
 
 /**
  * ```ts
  * const client = createClient();
  *
- * const useQuery = createQueryHook(client, "<unique-key>");
+ * const useImmutable = createImmutableHook(client, "<unique-key>");
  *
  * // Fetch the query
- * useQuery("/pets");
+ * useImmutable("/pets");
  *
  * // Skip the query
- * useQuery("/pets", null);
+ * useImmutable("/pets", null);
  *
  * // Fetch the query with parameters
- * useQuery("/pets", {
+ * useImmutable("/pets", {
  *   params: { query: { limit: 10 } }
  * });
  *
  * // Fetch the query with parameters and SWR configuration
- * useQuery(
+ * useImmutable(
  *   "/pets",
  *   { params: { query: { limit: 10 } } },
  *   { errorRetryCount: 2 },
  * );
  *
  * // Fetch the query with no parameters and SWR configuration
- * useQuery(
+ * useImmutable(
  *   "/pets",
  *   {},
  *   { errorRetryCount: 2 },
  * );
  * ```
  */
-export const createQueryHook = configureBaseQueryHook(useSWR);
+export const createImmutableHook = configureBaseQueryHook(useSWRImmutable);
