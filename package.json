@@ -1,5 +1,6 @@
 {
   "name": "swr-openapi",
+  "type": "module",
   "version": "4.1.2",
   "description": "Generate SWR hooks from OpenAPI schemas",
   "license": "MIT",
@@ -11,12 +12,18 @@
   "author": {
     "name": "Hunter Tunnicliff"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/query.js",
+    "./immutable": "./dist/immutable.js",
+    "./infinite": "./dist/infinite.js",
+    "./mutate": "./dist/mutate.js",
+    "./query": "./dist/query.js"
+  },
   "sideEffects": false,
   "files": [
     "dist",
+    "src",
+    "LICENSE",
     "README.md"
   ],
   "keywords": [
@@ -29,17 +36,19 @@
   ],
   "scripts": {
     "prepublish": "npm run build && npm run types:check && npm run format:check",
-    "build": "tsup",
+    "build": "tsc",
     "test": "./setup-test-data.sh && tsc --project test/tsconfig.json",
     "types:check": "tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "exports:check": "attw --pack . --ignore-rules=cjs-resolves-to-esm"
   },
   "dependencies": {
     "openapi-typescript-helpers": "0.0.13",
     "type-fest": "4.26.1"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.16.1",
     "@types/react": "18.3.5",
     "expect-type": "0.20.0",
     "openapi-fetch": "0.12.0",
@@ -47,7 +56,6 @@
     "prettier": "3.3.3",
     "react": "18.3.1",
     "swr": "2.2.5",
-    "tsup": "8.2.4",
     "typescript": "5.5.4"
   },
   "peerDependencies": {

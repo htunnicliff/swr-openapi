@@ -1,5 +1,5 @@
 import useSWRImmutable from "swr/immutable";
-import { configureBaseQueryHook } from "./query-base";
+import { configureBaseQueryHook } from "./query-base.js";
 
 /**
  * ```ts
