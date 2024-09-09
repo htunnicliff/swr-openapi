@@ -48,7 +48,7 @@
     "type-fest": "4.26.1"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.16.1",
+    "@arethetypeswrong/cli": "0.16.2",
     "@types/react": "18.3.5",
     "openapi-fetch": "0.12.0",
     "openapi-typescript": "7.4.0",
@@ -59,7 +59,7 @@
     "vitest": "2.0.5"
   },
   "peerDependencies": {
-    "openapi-fetch": "0.10",
+    "openapi-fetch": "0.12",
     "openapi-typescript": "7",
     "react": "18 || 19",
     "swr": "2"

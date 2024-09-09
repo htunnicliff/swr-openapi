@@ -56,6 +56,13 @@ describe("configureBaseQueryHook", () => {
       ],
       expect.any(Function),
     );
+
+    // @ts-expect-error - TODO: Support undefined init when not required
+    useQuery("/store/inventory");
+    expect(useSWR).toHaveBeenLastCalledWith(
+      ["<unique-key>", "/store/inventory", undefined],
+      expect.any(Function),
+    );
   });
 
   it("passes correct fetcher to useSWR", async () => {
