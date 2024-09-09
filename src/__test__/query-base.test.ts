@@ -84,7 +84,6 @@ describe("configureBaseQueryHook", () => {
       fetcher!(["some-key", "any-path", { some: "init" }]),
     ).rejects.toThrowError(new Error("Yikes"));
   });
-  1;
 
   it("passes correct config to useSWR", () => {
     useQuery("/pet/findByTags", {}, { errorRetryCount: 56 });
