@@ -1,9 +1,9 @@
 import type { Client, FetchOptions, ParseAsResponse } from "openapi-fetch";
 import type {
   FilterKeys,
-  HasRequiredKeys,
   MediaType,
   PathsWithMethod,
+  RequiredKeysOf,
   ResponseObjectMap,
   SuccessResponse,
 } from "openapi-typescript-helpers";
@@ -35,6 +35,8 @@ import type { PartialDeep } from "type-fest";
 export function useMutate<Paths extends {}, IMediaType extends MediaType>(
   _client: Client<Paths, IMediaType>,
   prefix: string,
+  // Types are loose here to support ecosystem utilities like _.isMatch
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   compare: (init: any, partialInit: object) => boolean,
 ) {
   type GetPath = PathsWithMethod<Paths, "get">;
@@ -59,7 +61,7 @@ export function useMutate<Paths extends {}, IMediaType extends MediaType>(
       Init extends GetInit<Path>,
       Data extends GetData<Path, Init>,
     >(
-      [path, init]: HasRequiredKeys<Init> extends never
+      [path, init]: RequiredKeysOf<Init> extends never
         ? [Path, PartialDeep<Init>?]
         : [Path, Init],
       data?: Data | Promise<Data> | MutatorCallback<Data>,

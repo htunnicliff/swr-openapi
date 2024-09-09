@@ -9,7 +9,7 @@ import type { paths } from "./fixtures/petstore.js";
 // Mock `useCallback` (return given function as-is)
 vi.mock("react");
 const { useCallback } = vi.mocked(React);
-useCallback.mockImplementation((fn, _deps) => fn);
+useCallback.mockImplementation((fn) => fn);
 
 // Mock `useSWRConfig`
 const swrMutate = vi.fn<ScopedMutator>();

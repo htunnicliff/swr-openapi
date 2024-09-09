@@ -5,18 +5,18 @@ on: [push]
 jobs:
   build:
     name: Build and Test
-
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        node: [18, 20, 22]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node ${{ matrix.node }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: pnpm
+          node-version: ${{ matrix.node }}
 
       - name: Install dependencies
         run: npm ci
