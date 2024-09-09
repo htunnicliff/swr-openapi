@@ -35,7 +35,7 @@ import type { PartialDeep } from "type-fest";
 export function useMutate<Paths extends {}, IMediaType extends MediaType>(
   _client: Client<Paths, IMediaType>,
   prefix: string,
-  compare: (init: unknown, partialInit: unknown) => boolean,
+  compare: (init: any, partialInit: object) => boolean,
 ) {
   type GetPath = PathsWithMethod<Paths, "get">;
   type GetRequest<Path extends GetPath> = FilterKeys<Paths[Path], "get">;
@@ -67,7 +67,12 @@ export function useMutate<Paths extends {}, IMediaType extends MediaType>(
     ) => {
       return mutate<Data>(
         (key) => {
-          if (!Array.isArray(key) || key.length !== 3) {
+          if (
+            // Must be array
+            !Array.isArray(key) ||
+            // Must have 2 or 3 elements (prefix, path, optional init)
+            ![2, 3].includes(key.length)
+          ) {
             return false;
           }
 
