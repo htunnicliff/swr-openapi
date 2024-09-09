@@ -17,7 +17,6 @@
 
 ```sh
 npm install swr-openapi swr openapi-fetch
-npm install --save-dev openapi-typescript typescript
 ```
 
 ## Setup
@@ -30,205 +29,290 @@ Here is an example of types being generated for a service via the command line:
 npx openapi-typescript "https://sandwiches.example/openapi/json" --output ./types/sandwich-schema.ts
 ```
 
-Then, create an [openapi-fetch](https://openapi-ts.pages.dev/openapi-fetch/) client and initialize [swr](https://swr.vercel.app/) hooks for the API:
+Initialize an [openapi-fetch](https://openapi-ts.pages.dev/openapi-fetch/) client and create any desired hooks.
 
-<!-- prettier-ignore -->
 ```ts
 // sandwich-api.ts
 import createClient from "openapi-fetch";
-import { createHooks } from "swr-openapi";
-import type * as SandwichesSchema from "./types/sandwich-schema";
+import { createQueryHook } from "swr-openapi";
+import type { paths as SandwichPaths } from "./types/sandwich-schema";
 
-export const sandwichesApi = createClient<SandwichesSchema.paths>({
-  baseUrl: "https://sandwiches.example",
-});
+const client = createClient<SandwichPaths>(/* ... */);
 
-export const {
-  use: useSandwiches,
-  useInfinite: useSandwichesInfinite,
-} = createHooks(sandwichesApi, "sandwich-api");
-```
+const useSandwiches = createQueryHook(client, "sandwich-api");
 
-## Usage
-
-```tsx
-import { useSandwiches } from "./sandwich-api";
-
-export function MySandwiches() {
-  // Fetch a single sandwich (uses useSWR)
-  const { data: sandwiches } = useSandwiches("/sandwiches/{sandwichId}", {
+const { data, error, isLoading, isValidating, mutate } = useSandwiches(
+  "/sandwich/{id}", // <- Fully typed paths!
+  {
     params: {
       path: {
-        sandwichId: "sandwich-123",
+        id: "123", // <- Fully typed params!
       },
     },
-  });
-
-  // Fetch multiple pages of sandwiches (uses useSWRInfinite)
-  const {
-    data: pages,
-    size,
-    setSize,
-  } = useSandwichesInfinite("/sandwiches", (index, previous) => {
-    if (!previous.hasMore) {
-      return null;
-    }
-
-    return {
-      params: {
-        query: {
-          limit: 25,
-          offset: 25 * index,
-        },
-      },
-    };
-  });
-}
+  }
+);
 ```
 
-## API Reference
+Wrapper hooks are provided 1:1 for each hook exported by SWR.
 
-### `createHooks(api, keyPrefix)`
+# API Reference
 
-- Parameters:
-  - `api`: An openapi-fetch client.
-  - `keyPrefix`: A string to differentiate this API from others. This helps avoid swr cache collisions when using multiple APIs that may have identical paths.
-- Returns:
-  - [`use`](#usepath-options-swrconfig): A wrapper over [`useSWR`][swr-api] bound to the given api.
-  - [`useInfinite`](#useinfinitepath-getoptionsfn-swrconfig): A wrapper over [`useSWRInfinite`][swr-infinite-api] bound to the given api.
+- [Hook Builders](#hook-builders)
+- [`useQuery`](#useQuery)
+- [`useImmutable`](#useImmutable)
+- [`useInfinite`](#useInfinite)
+- [`useMutate`](#useMutate)
 
-Depending on your project preferences, there are different ways to export the return value of `createHooks`. Here are two examples:
+## Hook Builders
+
+```ts
+import createClient from "openapi-fetch";
+import { createQueryHook } from "swr-openapi"; // or "swr-openapi/query"
+import { createImmutableHook } from "swr-openapi/immutable";
+import { createInfiniteHook } from "swr-openapi/infinite";
+import { paths as SomeApiPaths } from "./some-api";
+
+const client = createClient<SomeApiPaths>(/* ... */);
+const prefix = "some-api";
+
+export const useQuery = createQueryHook(client, prefix);
+export const useImmutable = createImmutableHook(client, prefix);
+export const useInfinite = createInfiniteHook(client, prefix);
+```
+
+### Parameters
+
+Each builder hook accepts the same parameters:
+
+- `client`: An OpenAPI fetch [client][oai-fetch-client].
+- `prefix`: A prefix unique to the fetch client.
+
+### Returns
+
+- `createQueryHook` &rarr; [`useQuery`](#usequery)
+- `createImmutableHook` &rarr; [`useImmutable`](#useimmutable)
+- `createInfiniteHook` &rarr; [`useInfinite`](#useinfinite)
+
+## `useQuery`
+
+```ts
+const useQuery = createQueryHook(/* ... */);
+
+const { data, error, isLoading, isValidating, mutate } = useQuery(
+  path,
+  init,
+  config
+);
+```
 
 <details>
-<summary><b>Option 1: Destructure the return value and rename the destructured properties</b></summary>
+<summary>How <code>useQuery</code> works</summary>
 
-<!-- prettier-ignore -->
+`useQuery` is a very thin wrapper over [`useSWR`][swr-api]. Most of the code involves TypeScript generics that are transpiled away.
+
+The prefix supplied in `createQueryHook` is joined with `path` and `init` to form the key passed to SWR.
+
+> `prefix` is only used to help ensure uniqueness for SWR's cache, in the case that two or more API clients share an identical path (e.g. `/api/health`). It is not included in actual `GET` requests.
+
+Then, `GET` is invoked with `path` and `init`. Short and sweet.
+
 ```ts
-// sandwich-api.ts
-export const {
-  use: useSandwiches,
-  useInfinite: useSandwichesInfinite
-} = createHooks(sandwichesApi, "sandwich-api");
-```
-
-```ts
-// some-component.tsx
-import { useSandwiches } from "./sandwich-api";
-
-export function SomeComponent() {
-  const { data, error, isLoading } = useSandwiches("/sandwiches/{sandwichId}", {
-    params: {
-      path: {
-        sandwichId: "sandwich-123",
-      },
+function useQuery(path, ...[init, config]) {
+  return useSWR(
+    init !== null ? [prefix, path, init] : null,
+    async ([_prefix, path, init]) => {
+      const res = await client.GET(path, init);
+      if (res.error) {
+        throw res.error;
+      }
+      return res.data;
     },
-  });
-}
-```
-
-</details>
-
-<details>
-<summary><b>Option 2: Don't destructure the return value</b></summary>
-
-```ts
-// sandwich-api.ts
-export const sandwiches = createHooks(sandwichesApi, "sandwich-api");
-```
-
-```ts
-// some-component.tsx
-import { sandwiches } from "./sandwich-api";
-
-export function SomeComponent() {
-  const { data, error, isLoading } = sandwiches.use(
-    "/sandwiches/{sandwichId}",
-    {
-      params: {
-        path: {
-          sandwichId: "sandwich-123",
-        },
-      },
-    },
+    config
   );
 }
 ```
 
 </details>
 
-### `use(path, options, swrConfig)`
+### Parameters
+
+- `path`: Any endpoint that supports `GET` requests.
+- `init`:
+  - [Fetch options][oai-fetch-options] for the chosen endpoint (optional when no params are required by the endpoint).
+  - `null` to skip the request (see [SWR Conditional Fetching][swr-conditional-fetching]).
+- `config`: [SWR options][swr-options] (optional).
+
+### Returns
+
+- An [SWR response][swr-response].
+
+## `useImmutable`
 
 ```ts
-function use(
-  path: Path,
-  options: Options | null,
-  swrConfig?: Config,
-): SWRResponse;
-```
+const useImmutable = createImmutableHook(/* ... */);
 
-- Parameters:
-  - `path`: The GET endpoint to request.
-  - `options`: Either
-    1. An openapi-fetch [`FetchOptions`](https://openapi-ts.pages.dev/openapi-fetch/api#fetch-options) object for the given path.
-    2. `null` to support [conditional fetching](https://swr.vercel.app/docs/conditional-fetching).
-  - `swrConfig` (optional): [Configuration options](https://swr.vercel.app/docs/api#options) for `useSWR`.
-- Returns:
-  - A [`useSWR` response](https://swr.vercel.app/docs/api#return-values).
-
-```ts
-const { data, error, isLoading, mutate, revalidate } = use(
-  "/sandwiches/{sandwichId}",
-  {
-    params: {
-      path: {
-        sandwichId: "sandwich-123",
-      },
-    },
-  },
+const { data, error, isLoading, isValidating, mutate } = useImmutable(
+  path,
+  init,
+  config
 );
 ```
 
-### `useInfinite(path, getOptionsFn, swrConfig)`
+This hook has the same contracts as `useQuery`. However, instead of wrapping [`useSWR`][swr-api], it wraps `useSWRImmutable`. This immutable hook [disables automatic revalidations][swr-disable-auto-revalidate] but is otherwise identical to `useSWR`.
+
+### Parameters
+
+Identical to `useQuery` [parameters](#parameters-1).
+
+### Returns
+
+Identical to `useQuery` [returns](#returns-1).
+
+## `useInfinite`
 
 ```ts
-function useInfinite(
-  path: Path,
-  getOptionsFn: SWRInfiniteKeyLoader<Data, Options | null>,
-  swrConfig?: Config,
-): SWRInfiniteResponse;
+const useInfinite = createInfiniteHook(/* ... */);
+
+const { data, error, isLoading, isValidating, mutate, size, setSize } =
+  useInfinite(path, getInit, config);
 ```
 
-- Parameters:
-  - `path`: The GET endpoint to request.
-  - `getOptionsFn`: An swr [`getKey` function](https://swr.vercel.app/docs/pagination#parameters) that accepts the index and the previous page data, returning either an openapi-fetch [`FetchOptions`](https://openapi-ts.pages.dev/openapi-fetch/api#fetch-options) object for loading the next page or `null`, once there are no more pages.
-  - `swrConfig` (optional): [Configuration options](https://swr.vercel.app/docs/pagination#parameters) for `useSWRInfinite`.
-- Returns:
-  - A [`useSWRInfinite` response](https://swr.vercel.app/docs/pagination#return-values).
+<details>
+<summary>How <code>useInfinite</code> works</summary>
+
+Just as `useQuery` is a thin wrapper over [`useSWR`][swr-api], `useInfinite` is a thin wrapper over [`useSWRInfinite`][swr-infinite].
+
+Instead of using static [fetch options][oai-fetch-options] as part of the SWR key, `useInfinite` is given a function ([`getInit`](#getinit)) that should dynamically determines the fetch options based on the current page index and the data from a previous page.
 
 ```ts
-const {
-  data: sandwichPages,
-  error,
-  isLoading,
-  isValidating,
-  mutate,
-  size,
-  setSize,
-} = useInfinite("/sandwiches", (index, previousPage) => {
-  if (!previousPage.hasMore) {
+function useInfinite(path, getInit, config) {
+  const fetcher = async ([_, path, init]) => {
+    const res = await client.GET(path, init);
+    if (res.error) {
+      throw res.error;
+    }
+    return res.data;
+  };
+  const getKey = (index, previousPageData) => {
+    const init = getInit(index, previousPageData);
+    if (init === null) {
+      return null;
+    }
+    const key = [prefix, path, init];
+    return key;
+  };
+  return useSWRInfinite(getKey, fetcher, config);
+}
+```
+
+</details>
+
+### Parameters
+
+- `path`: Any endpoint that supports `GET` requests.
+- `getInit`: A function that returns the fetch options for a given page ([learn more](#getinit)).
+- `config`: [SWR infinite options][swr-infinite-options] (optional).
+
+### Returns
+
+- An [SWR infinite response][swr-infinite-return].
+
+### `getInit`
+
+This function is similar to the [`getKey`][swr-infinite-options] parameter accepted by `useSWRInfinite`, with some slight alterations to take advantage of Open API types.
+
+#### Parameters
+
+- `pageIndex`: The zero-based index of the current page to load.
+- `previousPageData`:
+  - `undefined` (if on the first page).
+  - The fetched response for the last page retrieved.
+
+#### Should Return
+
+- [Fetch options][oai-fetch-options] for the next page to load.
+
+#### Examples
+
+<details>
+<summary>Example using limit and offset</summary>
+
+```ts
+useInfinite("/something", (pageIndex, previousPageData) => {
+  // No more pages
+  if (previousPageData && !previousPageData.hasMore) {
     return null;
   }
 
+  // First page
+  if (!previousPageData) {
+    return {
+      params: {
+        query: {
+          limit: 10,
+        },
+      },
+    };
+  }
+
+  // Next page
   return {
     params: {
       query: {
-        limit: 25,
-        offset: 25 * index,
+        limit: 10,
+        offset: 10 * pageIndex,
       },
     },
   };
 });
 ```
 
+</details>
+
+<details>
+<summary>Example using cursors</summary>
+
+```ts
+useInfinite("/something", (pageIndex, previousPageData) => {
+  // No more pages
+  if (previousPageData && !previousPageData.nextCursor) {
+    return null;
+  }
+
+  // First page
+  if (!previousPageData) {
+    return {
+      params: {
+        query: {
+          limit: 10,
+        },
+      },
+    };
+  }
+
+  // Next page
+  return {
+    params: {
+      query: {
+        limit: 10,
+        cursor: previousPageData.nextCursor,
+      },
+    },
+  };
+});
+```
+
+</details>
+
+## `useMutate`
+
+[oai-fetch-client]: https://openapi-ts.pages.dev/openapi-fetch/api#createclient
+[oai-fetch-options]: https://openapi-ts.pages.dev/openapi-fetch/api#fetch-options
+[swr-options]: https://swr.vercel.app/docs/api#options
+[swr-conditional-fetching]: https://swr.vercel.app/docs/conditional-fetching#conditional
+[swr-response]: https://swr.vercel.app/docs/api#return-values
+[swr-disable-auto-revalidate]: https://swr.vercel.app/docs/revalidation.en-US#disable-automatic-revalidations
 [swr-api]: https://swr.vercel.app/docs/api
-[swr-infinite-api]: https://swr.vercel.app/docs/pagination#useswrinfinite
+[swr-infinite]: https://swr.vercel.app/docs/pagination#useswrinfinite
+[swr-infinite-return]: https://swr.vercel.app/docs/pagination#return-values
+[swr-infinite-options]: https://swr.vercel.app/docs/pagination#parameters
