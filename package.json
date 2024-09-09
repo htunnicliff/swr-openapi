@@ -12,6 +12,9 @@
   "author": {
     "name": "Hunter Tunnicliff"
   },
+  "engines": {
+    "node": ">=18"
+  },
   "exports": {
     ".": "./dist/query.js",
     "./immutable": "./dist/immutable.js",
