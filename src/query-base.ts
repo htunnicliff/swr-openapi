@@ -2,13 +2,12 @@ import type { Client, FetchOptions, ParseAsResponse } from "openapi-fetch";
 import type {
   ErrorResponse,
   FilterKeys,
-  HasRequiredKeys,
   MediaType,
   PathsWithMethod,
   ResponseObjectMap,
   SuccessResponse,
 } from "openapi-typescript-helpers";
-import type { SWRHook, Fetcher, SWRConfiguration } from "swr";
+import type { Fetcher, SWRConfiguration, SWRHook } from "swr";
 
 /**
  * @private
@@ -43,15 +42,10 @@ export function configureBaseQueryHook(useHook: SWRHook) {
       Data extends GetData<Path, Init>,
       Error extends GetError<Path>,
       Config extends SWRConfiguration<Data, Error>,
-    >(
-      path: Path,
-      ...[init, config]: HasRequiredKeys<Init> extends never
-        ? [(Init | null)?, Config?]
-        : [Init | null, Config?]
-    ) {
+    >(path: Path, ...[init, config]: [Init | null, Config?]) {
       type Key = [Prefix, Path, Init] | null;
 
-      const key: Key = init ? [prefix, path, init] : null;
+      const key: Key = init !== null ? [prefix, path, init] : null;
 
       const fetcher: Fetcher<Data, Key> = async ([_, path, init]) => {
         const res = await client.GET(path, init);

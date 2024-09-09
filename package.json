@@ -36,8 +36,8 @@
   ],
   "scripts": {
     "prepublish": "npm run build && npm run types:check && npm run format:check",
-    "build": "tsc",
-    "test": "./setup-test-data.sh && tsc --project test/tsconfig.json",
+    "build": "tsc --project tsconfig.build.json",
+    "test": "vitest",
     "types:check": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -50,16 +50,16 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.16.1",
     "@types/react": "18.3.5",
-    "expect-type": "0.20.0",
     "openapi-fetch": "0.12.0",
     "openapi-typescript": "7.4.0",
     "prettier": "3.3.3",
     "react": "18.3.1",
     "swr": "2.2.5",
-    "typescript": "5.5.4"
+    "typescript": "5.5.4",
+    "vitest": "2.0.5"
   },
   "peerDependencies": {
-    "openapi-fetch": ">=0.12",
+    "openapi-fetch": "0.10",
     "openapi-typescript": "7",
     "react": "18 || 19",
     "swr": "2"
