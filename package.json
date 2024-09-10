@@ -1,7 +1,7 @@
 {
   "name": "swr-openapi",
   "type": "module",
-  "version": "5.0.0-rc.8",
+  "version": "5.0.0-rc.9",
   "description": "Generate SWR hooks from OpenAPI schemas",
   "license": "MIT",
   "repository": {
@@ -15,7 +15,7 @@
   "engines": {
     "node": ">=18"
   },
-  "module": "dist/index.js",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
