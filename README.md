@@ -68,10 +68,12 @@ Wrapper hooks are provided 1:1 for each hook exported by SWR.
 ```ts
 import createClient from "openapi-fetch";
 
-import { createQueryHook } from "swr-openapi";
-import { createImmutableHook } from "swr-openapi/immutable";
-import { createInfiniteHook } from "swr-openapi/infinite";
-import { createMutateHook } from "swr-openapi/mutate";
+import {
+  createQueryHook,
+  createImmutableHook,
+  createInfiniteHook,
+  createMutateHook,
+} from "swr-openapi";
 
 import { paths as SomeApiPaths } from "./some-api";
 

@@ -1,3 +1,4 @@
+import { isMatch } from "lodash";
 import createClient from "openapi-fetch";
 import * as React from "react";
 import * as SWR from "swr";
@@ -5,7 +6,6 @@ import type { ScopedMutator } from "swr/_internal";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createMutateHook } from "../mutate.js";
 import type { paths } from "./fixtures/petstore.js";
-import { isMatch } from "lodash";
 
 // Mock `useCallback` (return given function as-is)
 vi.mock("react");
@@ -44,10 +44,7 @@ describe("createMutateHook", () => {
   it("returns callback that invokes swr `mutate` with fn, data and options", async () => {
     expect(swrMutate).not.toHaveBeenCalled();
 
-    const data = {
-      name: "doggie",
-      photoUrls: ["https://example.com"],
-    };
+    const data = [{ name: "doggie", photoUrls: ["https://example.com"] }];
     const config = { throwOnError: false };
 
     await mutate(["/pet/findByStatus"], data, config);
@@ -65,7 +62,7 @@ describe("createMutateHook", () => {
 
   describe("useMutate -> mutate -> key matcher", () => {
     it("returns false for non-array keys", async () => {
-      await mutate(["/pet/findByTags"]);
+      await mutate(["/pet/findByStatus"]);
       const keyMatcher = getKeyMatcher();
 
       expect(keyMatcher(null)).toBe(false);
@@ -75,7 +72,7 @@ describe("createMutateHook", () => {
     });
 
     it("returns false for arrays with length !== 3", async () => {
-      await mutate(["/pet/findByTags"]);
+      await mutate(["/pet/findByStatus"]);
       const keyMatcher = getKeyMatcher();
 
       expect(keyMatcher(Array(0))).toBe(false);
@@ -86,19 +83,19 @@ describe("createMutateHook", () => {
     });
 
     it("matches when prefix and path are equal and init isn't given", async () => {
-      await mutate(["/pet/findByTags"]);
+      await mutate(["/pet/findByStatus"]);
       const keyMatcher = getKeyMatcher();
 
       // Same path, no init
-      expect(keyMatcher(["<unique-key>", "/pet/findByTags"])).toBe(true);
+      expect(keyMatcher(["<unique-key>", "/pet/findByStatus"])).toBe(true);
 
       // Same path, init ignored
       expect(
-        keyMatcher(["<unique-key>", "/pet/findByTags", { some: "init" }]),
+        keyMatcher(["<unique-key>", "/pet/findByStatus", { some: "init" }]),
       ).toBe(true);
 
       // Same path, undefined init ignored
-      expect(keyMatcher(["<unique-key>", "/pet/findByTags", undefined])).toBe(
+      expect(keyMatcher(["<unique-key>", "/pet/findByStatus", undefined])).toBe(
         true,
       );
     });
@@ -107,7 +104,7 @@ describe("createMutateHook", () => {
       const psudeoCompare = vi.fn().mockReturnValue("booleanPlaceholder");
 
       const prefix = "<unique-key>";
-      const path = "/pet/findByTags";
+      const path = "/pet/findByStatus";
       const givenInit = {};
 
       const useMutate = createMutateHook(client, prefix, psudeoCompare);

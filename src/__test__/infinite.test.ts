@@ -28,10 +28,12 @@ describe("createInfiniteHook", () => {
 
     // Invokes `useSWRInfinite`
     expect(useSWRInfinite).toHaveBeenCalledTimes(1);
+
     let getKey = useSWRInfinite.mock.lastCall![0];
 
     // Calling `getKey` should invoke `getInit`
     const key = getKey(0, null);
+
     expect(getInit).toHaveBeenCalledTimes(1);
 
     // `getInit` should be called with key loader arguments
@@ -44,6 +46,7 @@ describe("createInfiniteHook", () => {
     getInit.mockReturnValueOnce(null);
     useInfinite("/pet/{petId}", getInit);
     getKey = useSWRInfinite.mock.lastCall![0];
+
     expect(getKey(0, null)).toBeNull();
   });
 
@@ -70,11 +73,12 @@ describe("createInfiniteHook", () => {
 
     await expect(() =>
       fetcher!(["some-key", "any-path", { some: "init" }]),
-    ).rejects.toThrowError(new Error("Yikes"));
+    ).rejects.toThrow(new Error("Yikes"));
   });
 
   it("passes correct config to useSWRInfinite", () => {
     useInfinite("/pet/{petId}", vi.fn(), { initialSize: 5000 });
+
     expect(useSWRInfinite).toHaveBeenLastCalledWith(
       expect.any(Function),
       expect.any(Function),
@@ -82,6 +86,7 @@ describe("createInfiniteHook", () => {
     );
 
     useInfinite("/pet/{petId}", vi.fn());
+
     expect(useSWRInfinite).toHaveBeenLastCalledWith(
       expect.any(Function),
       expect.any(Function),

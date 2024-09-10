@@ -495,9 +495,13 @@ export interface operations {
                 /** @description Status values that need to be considered for filter */
                 status?: "available" | "pending" | "sold";
             };
-            header?: never;
+            header?: {
+                "X-Example": string;
+            };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                "some-cookie-key": string;
+            };
         };
         requestBody?: never;
         responses: {
@@ -516,15 +520,19 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        message: "Invalid status";
+                    }
+                };
             };
         };
     };
     findPetsByTags: {
         parameters: {
-            query?: {
+            query: {
                 /** @description Tags to filter by */
-                tags?: string[];
+                tags: string[];
             };
             header?: never;
             path?: never;
@@ -578,14 +586,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        message: "Invalid pet configuration";
+                    };
+                };
             };
             /** @description Pet not found */
             404: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content?: never
             };
         };
     };

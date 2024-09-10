@@ -30,9 +30,11 @@ describe("configureBaseQueryHook", () => {
 
   it("passes correct key to useSWR", () => {
     useQuery("/store/inventory", {});
+
     expect(useSWR).toHaveBeenLastCalledWith(
       ["<unique-key>", "/store/inventory", {}],
       expect.any(Function),
+      undefined,
     );
 
     useQuery("/pet/findByTags", {
@@ -42,6 +44,7 @@ describe("configureBaseQueryHook", () => {
         },
       },
     });
+
     expect(useSWR).toHaveBeenLastCalledWith(
       [
         "<unique-key>",
@@ -55,19 +58,21 @@ describe("configureBaseQueryHook", () => {
         },
       ],
       expect.any(Function),
+      undefined,
     );
 
-    // @ts-expect-error - TODO: Support undefined init when not required
     useQuery("/store/inventory");
+
     expect(useSWR).toHaveBeenLastCalledWith(
       ["<unique-key>", "/store/inventory", undefined],
       expect.any(Function),
+      undefined,
     );
   });
 
   it("passes correct fetcher to useSWR", async () => {
     // Note: useQuery input doesn't matter here, since we test the fetcher in isolation
-    useQuery("/pet/findByTags", {});
+    useQuery("/pet/findByStatus");
 
     const fetcher = useSWR.mock.lastCall![1];
 
@@ -89,14 +94,14 @@ describe("configureBaseQueryHook", () => {
 
     await expect(() =>
       fetcher!(["some-key", "any-path", { some: "init" }]),
-    ).rejects.toThrowError(new Error("Yikes"));
+    ).rejects.toThrow(new Error("Yikes"));
   });
 
   it("passes correct config to useSWR", () => {
-    useQuery("/pet/findByTags", {}, { errorRetryCount: 56 });
+    useQuery("/pet/findByStatus", {}, { errorRetryCount: 56 });
 
     expect(useSWR).toHaveBeenLastCalledWith(
-      ["<unique-key>", "/pet/findByTags", {}],
+      ["<unique-key>", "/pet/findByStatus", {}],
       expect.any(Function),
       { errorRetryCount: 56 },
     );

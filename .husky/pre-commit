@@ -1,2 +1,2 @@
 lint-staged
-vitest --run --changed
+vitest --run --changed --typecheck

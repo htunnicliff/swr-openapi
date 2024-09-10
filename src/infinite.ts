@@ -1,17 +1,11 @@
-import type { Client, FetchOptions, ParseAsResponse } from "openapi-fetch";
-import type {
-  ErrorResponse,
-  FilterKeys,
-  MediaType,
-  PathsWithMethod,
-  ResponseObjectMap,
-  SuccessResponse,
-} from "openapi-typescript-helpers";
+import type { Client } from "openapi-fetch";
+import type { MediaType, PathsWithMethod } from "openapi-typescript-helpers";
 import useSWRInfinite, {
   type SWRInfiniteConfiguration,
   type SWRInfiniteFetcher,
   type SWRInfiniteKeyLoader,
 } from "swr/infinite";
+import type { TypesForGetRequest } from "./types.js";
 
 /**
  * ```ts
@@ -40,36 +34,19 @@ export function createInfiniteHook<
   IMediaType extends MediaType,
   Prefix extends string,
 >(client: Client<Paths, IMediaType>, prefix: Prefix) {
-  type GetPath = PathsWithMethod<Paths, "get">;
-  type GetRequest<Path extends GetPath> = FilterKeys<Paths[Path], "get">;
-  type GetInit<Path extends GetPath> = FetchOptions<GetRequest<Path>>;
-  type GetData<
-    Path extends GetPath,
-    Init extends GetInit<Path>,
-  > = ParseAsResponse<
-    FilterKeys<
-      SuccessResponse<ResponseObjectMap<GetRequest<Path>>>,
-      IMediaType
-    >,
-    Init
-  >;
-  type GetError<Path extends GetPath> = FilterKeys<
-    ErrorResponse<ResponseObjectMap<GetRequest<Path>>>,
-    IMediaType
-  >;
-
   return function useInfinite<
-    Path extends GetPath,
-    Init extends GetInit<Path>,
-    Data extends GetData<Path, Init>,
-    Error extends GetError<Path>,
+    Path extends PathsWithMethod<Paths, "get">,
+    R extends TypesForGetRequest<Paths, Path>,
+    Init extends R["Init"],
+    Data extends R["Data"],
+    Error extends R["Error"],
     Config extends SWRInfiniteConfiguration<Data, Error>,
   >(
     path: Path,
     getInit: SWRInfiniteKeyLoader<Data, Init | null>,
     config?: Config,
   ) {
-    type Key = [Prefix, Path, Init] | null;
+    type Key = [Prefix, Path, Init | undefined] | null;
     type KeyLoader = SWRInfiniteKeyLoader<Data, Key>;
 
     const fetcher: SWRInfiniteFetcher<Data, KeyLoader> = async ([
@@ -77,6 +54,7 @@ export function createInfiniteHook<
       path,
       init,
     ]) => {
+      // @ts-expect-error TODO: Improve internal init types
       const res = await client.GET(path, init);
       if (res.error) {
         throw res.error;

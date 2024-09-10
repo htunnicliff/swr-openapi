@@ -1,5 +1,6 @@
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
+import vitest from "@vitest/eslint-plugin";
 import prettier from "eslint-config-prettier";
 
 export default tseslint.config(
@@ -14,7 +15,6 @@ export default tseslint.config(
       },
     },
   },
-  prettier,
   {
     files: ["**/*.{js,ts}"],
     rules: {
@@ -33,4 +33,31 @@ export default tseslint.config(
       "@typescript-eslint/only-throw-error": "off",
     },
   },
+  {
+    files: ["**/__test__/**"],
+    plugins: {
+      vitest,
+    },
+    settings: {
+      vitest: {
+        typecheck: true,
+      },
+    },
+    languageOptions: {
+      globals: {
+        ...vitest.environments.env.globals,
+      },
+    },
+    rules: {
+      ...vitest.configs.all.rules,
+      "vitest/no-hooks": "off",
+      "vitest/padding-around-expect-groups": "off",
+      "vitest/prefer-lowercase-title": "off",
+      "vitest/prefer-expect-assertions": "off",
+      "vitest/prefer-to-be-falsy": "off",
+      "vitest/prefer-to-be-truthy": "off",
+      "vitest/require-hook": "off",
+    },
+  },
+  prettier,
 );

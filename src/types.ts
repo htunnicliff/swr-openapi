@@ -1,30 +1,46 @@
+import type { FetchResponse, MaybeOptionalInit } from "openapi-fetch";
 import type {
-  ErrorResponseJSON,
-  FilterKeys,
+  HttpMethod,
+  MediaType,
   PathsWithMethod,
-  SuccessResponseJSON,
+  RequiredKeysOf,
 } from "openapi-typescript-helpers";
 import type { SWRConfiguration, SWRResponse } from "swr";
 
-export type RequestTypes<
-  Paths extends object,
-  Path extends PathsWithMethod<Paths, "get">,
-  Req = FilterKeys<Paths[Path], "get">,
-  Data = SuccessResponseJSON<Req>,
-  Error = ErrorResponseJSON<Req>,
-  Params = Req extends { parameters: infer P } ? P : never,
-  PathParams = Params extends { path?: infer P } ? P : never,
-  QueryParams = Params extends { query?: infer Q } ? Q : never,
-  HeaderParams = Params extends { header?: infer H } ? H : never,
-  CookieParams = Params extends { cookie?: infer C } ? C : never,
+type MaybeRequired<T> = RequiredKeysOf<T> extends never ? T | undefined : T;
+
+type TryKey<T, K extends PropertyKey> = T extends { [Key in K]?: unknown }
+  ? T[K]
+  : undefined;
+
+export type TypesForRequest<
+  Paths extends {},
+  Method extends Extract<HttpMethod, keyof Paths[keyof Paths]>,
+  Path extends PathsWithMethod<Paths, Method>,
+  // ---
+  Init = MaybeOptionalInit<Paths[Path], Method>,
+  Params = Init extends { params?: unknown } ? Init["params"] : undefined,
+  Res = FetchResponse<Paths[Path][Method], Init, MediaType>,
+  Data = Extract<Res, { data: unknown }>["data"],
+  Error = Extract<Res, { error: unknown }>["error"],
+  PathParams = TryKey<Params, "path">,
+  Query = TryKey<Params, "query">,
+  Headers = TryKey<Params, "header">,
+  Cookies = TryKey<Params, "cookie">,
   SWRConfig = SWRConfiguration<Data, Error>,
 > = {
+  Init: Init;
   Data: Data;
   Error: Error;
-  PathParams: PathParams;
-  QueryParams: QueryParams;
-  Headers: HeaderParams;
-  Cookies: CookieParams;
+  Path: MaybeRequired<PathParams>;
+  Query: MaybeRequired<Query>;
+  Headers: MaybeRequired<Headers>;
+  Cookies: Cookies;
   SWRConfig: SWRConfig;
   SWRResponse: SWRResponse<Data, Error, SWRConfig>;
 };
+
+export type TypesForGetRequest<
+  Paths extends {},
+  Path extends PathsWithMethod<Paths, Extract<"get", keyof Paths[keyof Paths]>>,
+> = TypesForRequest<Paths, Extract<"get", keyof Paths[keyof Paths]>, Path>;

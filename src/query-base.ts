@@ -1,13 +1,11 @@
-import type { Client, FetchOptions, ParseAsResponse } from "openapi-fetch";
+import type { Client } from "openapi-fetch";
 import type {
-  ErrorResponse,
-  FilterKeys,
   MediaType,
   PathsWithMethod,
-  ResponseObjectMap,
-  SuccessResponse,
+  RequiredKeysOf,
 } from "openapi-typescript-helpers";
-import type { Fetcher, SWRConfiguration, SWRHook } from "swr";
+import type { Fetcher, SWRHook } from "swr";
+import type { TypesForGetRequest } from "./types.js";
 
 /**
  * @private
@@ -18,36 +16,25 @@ export function configureBaseQueryHook(useHook: SWRHook) {
     IMediaType extends MediaType,
     Prefix extends string,
   >(client: Client<Paths, IMediaType>, prefix: Prefix) {
-    type GetPath = PathsWithMethod<Paths, "get">;
-    type GetRequest<Path extends GetPath> = FilterKeys<Paths[Path], "get">;
-    type GetInit<Path extends GetPath> = FetchOptions<GetRequest<Path>>;
-    type GetData<
-      Path extends GetPath,
-      Init extends GetInit<Path>,
-    > = ParseAsResponse<
-      FilterKeys<
-        SuccessResponse<ResponseObjectMap<GetRequest<Path>>>,
-        IMediaType
-      >,
-      Init
-    >;
-    type GetError<Path extends GetPath> = FilterKeys<
-      ErrorResponse<ResponseObjectMap<GetRequest<Path>>>,
-      IMediaType
-    >;
-
     return function useQuery<
-      Path extends GetPath,
-      Init extends GetInit<Path>,
-      Data extends GetData<Path, Init>,
-      Error extends GetError<Path>,
-      Config extends SWRConfiguration<Data, Error>,
-    >(path: Path, ...[init, config]: [Init | null, Config?]) {
-      type Key = [Prefix, Path, Init] | null;
+      Path extends PathsWithMethod<Paths, "get">,
+      R extends TypesForGetRequest<Paths, Path>,
+      Init extends R["Init"],
+      Data extends R["Data"],
+      Error extends R["Error"],
+      Config extends R["SWRConfig"],
+    >(
+      path: Path,
+      ...[init, config]: RequiredKeysOf<Init> extends never
+        ? [(Init | null)?, Config?]
+        : [Init | null, Config?]
+    ) {
+      const key = init !== null ? ([prefix, path, init] as const) : null;
 
-      const key: Key = init !== null ? [prefix, path, init] : null;
+      type Key = typeof key;
 
       const fetcher: Fetcher<Data, Key> = async ([_, path, init]) => {
+        // @ts-expect-error TODO: Improve internal init types
         const res = await client.GET(path, init);
         if (res.error) {
           throw res.error;
@@ -55,16 +42,8 @@ export function configureBaseQueryHook(useHook: SWRHook) {
         return res.data as Data;
       };
 
-      if (config) {
-        return useHook<Data, Error, Key, Config>(key, fetcher, config);
-      }
-
-      // TODO: Why is this lint error occuring?
-      // > Unsafe return of type `SWRResponse<Data, Error, any>` from function
-      // > with return type `SWRResponse<Data, Error, Config>`
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return useHook<Data, Error, Key>(key, fetcher);
+      // @ts-expect-error TODO: Improve internal config types
+      return useHook<Data, Error, Key>(key, fetcher, config);
     };
   };
 }
