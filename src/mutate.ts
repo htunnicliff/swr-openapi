@@ -46,7 +46,7 @@ export function createMutateHook<
     >(
       [path, init]: [Path, PartialDeep<Init>?],
       data?: R["Data"] | Promise<R["Data"]> | MutatorCallback<R["Data"]>,
-      opts?: MutatorOptions<R["Data"]>,
+      opts?: boolean | MutatorOptions<R["Data"]>,
     ) {
       return swrMutate<R["Data"], R["Data"]>(
         (key) => {

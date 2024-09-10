@@ -60,6 +60,24 @@ describe("createMutateHook", () => {
     );
   });
 
+  it("supports boolean for options argument", async () => {
+    expect(swrMutate).not.toHaveBeenCalled();
+
+    const data = [{ name: "doggie", photoUrls: ["https://example.com"] }];
+
+    await mutate(["/pet/findByStatus"], data, false);
+
+    expect(swrMutate).toHaveBeenCalledTimes(1);
+    expect(swrMutate).toHaveBeenLastCalledWith(
+      // Matcher function
+      expect.any(Function),
+      // Data
+      data,
+      // Config
+      false,
+    );
+  });
+
   describe("useMutate -> mutate -> key matcher", () => {
     it("returns false for non-array keys", async () => {
       await mutate(["/pet/findByStatus"]);
