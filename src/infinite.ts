@@ -6,6 +6,7 @@ import useSWRInfinite, {
   type SWRInfiniteKeyLoader,
 } from "swr/infinite";
 import type { TypesForGetRequest } from "./types.js";
+import { useCallback } from "react";
 
 /**
  * ```ts
@@ -49,18 +50,17 @@ export function createInfiniteHook<
     type Key = [Prefix, Path, Init | undefined] | null;
     type KeyLoader = SWRInfiniteKeyLoader<Data, Key>;
 
-    const fetcher: SWRInfiniteFetcher<Data, KeyLoader> = async ([
-      _,
-      path,
-      init,
-    ]) => {
-      // @ts-expect-error TODO: Improve internal init types
-      const res = await client.GET(path, init);
-      if (res.error) {
-        throw res.error;
-      }
-      return res.data as Data;
-    };
+    const fetcher: SWRInfiniteFetcher<Data, KeyLoader> = useCallback(
+      async ([_, path, init]) => {
+        // @ts-expect-error TODO: Improve internal init types
+        const res = await client.GET(path, init);
+        if (res.error) {
+          throw res.error;
+        }
+        return res.data as Data;
+      },
+      [client],
+    );
 
     const getKey: KeyLoader = (index, previousPageData) => {
       const init = getInit(index, previousPageData);

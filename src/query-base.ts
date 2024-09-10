@@ -6,6 +6,7 @@ import type {
 } from "openapi-typescript-helpers";
 import type { Fetcher, SWRHook } from "swr";
 import type { TypesForGetRequest } from "./types.js";
+import { useCallback, useMemo } from "react";
 
 /**
  * @private
@@ -29,18 +30,25 @@ export function configureBaseQueryHook(useHook: SWRHook) {
         ? [(Init | null)?, Config?]
         : [Init | null, Config?]
     ) {
-      const key = init !== null ? ([prefix, path, init] as const) : null;
+      const key = useMemo(
+        () => (init !== null ? ([prefix, path, init] as const) : null),
+        [prefix, path, init],
+      );
 
       type Key = typeof key;
 
-      const fetcher: Fetcher<Data, Key> = async ([_, path, init]) => {
-        // @ts-expect-error TODO: Improve internal init types
-        const res = await client.GET(path, init);
-        if (res.error) {
-          throw res.error;
-        }
-        return res.data as Data;
-      };
+      // TODO: Lift up fetcher to and remove useCallback
+      const fetcher: Fetcher<Data, Key> = useCallback(
+        async ([_, path, init]) => {
+          // @ts-expect-error TODO: Improve internal init types
+          const res = await client.GET(path, init);
+          if (res.error) {
+            throw res.error;
+          }
+          return res.data as Data;
+        },
+        [client],
+      );
 
       // @ts-expect-error TODO: Improve internal config types
       return useHook<Data, Error, Key>(key, fetcher, config);

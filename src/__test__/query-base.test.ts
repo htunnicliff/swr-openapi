@@ -1,8 +1,15 @@
 import createClient from "openapi-fetch";
+import * as React from "react";
 import * as SWR from "swr";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { paths } from "./fixtures/petstore.js";
 import { configureBaseQueryHook } from "../query-base.js";
+import type { paths } from "./fixtures/petstore.js";
+
+// Mock `useCallback` (return given function as-is)
+vi.mock("react");
+const { useCallback, useMemo } = vi.mocked(React);
+useCallback.mockImplementation((fn) => fn);
+useMemo.mockImplementation((fn) => fn());
 
 // Mock `useSWR`
 vi.mock("swr");
