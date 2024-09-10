@@ -3,8 +3,8 @@ import * as React from "react";
 import * as SWR from "swr";
 import type { ScopedMutator } from "swr/_internal";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createMutateHook } from "../mutate.js";
-import type { paths } from "./fixtures/petstore.js";
+import { createMutateHook } from "../mutate";
+import type { paths } from "./fixtures/petstore";
 import { isMatch } from "lodash";
 
 // Mock `useCallback` (return given function as-is)

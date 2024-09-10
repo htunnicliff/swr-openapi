@@ -8,14 +8,14 @@ const shared: Options = {
 export default defineConfig([
   {
     entryPoints: [
-      "src/index.mts",
+      "src/index.ts",
       "src/immutable.ts",
       "src/infinite.ts",
       "src/mutate.ts",
       "src/query.ts",
     ],
-    format: "esm",
-    outDir: "dist/esm",
+    format: "cjs",
+    outDir: "dist",
     ...shared,
   },
   {
@@ -26,8 +26,8 @@ export default defineConfig([
       "src/mutate.ts",
       "src/query.ts",
     ],
-    format: "cjs",
-    outDir: "dist/cjs",
+    format: "esm",
+    outDir: "dist/esm",
     ...shared,
   },
 ]);

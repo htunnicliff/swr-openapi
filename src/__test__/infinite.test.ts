@@ -1,8 +1,8 @@
 import createClient from "openapi-fetch";
 import * as SWRInfinite from "swr/infinite";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { paths } from "./fixtures/petstore.js";
-import { createInfiniteHook } from "../infinite.js";
+import type { paths } from "./fixtures/petstore";
+import { createInfiniteHook } from "../infinite";
 
 // Mock `useSWRInfinite`
 vi.mock("swr/infinite");

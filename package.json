@@ -1,6 +1,6 @@
 {
   "name": "swr-openapi",
-  "type": "module",
+  "type": "commonjs",
   "version": "5.0.0-rc.4",
   "description": "Generate SWR hooks from OpenAPI schemas",
   "license": "MIT",
@@ -15,26 +15,28 @@
   "engines": {
     "node": ">=18"
   },
+  "main": "dist/index.js",
+  "module": "dist/esm/index.mjs",
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.cjs"
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/index.js"
     },
     "./immutable": {
-      "import": "./dist/esm/immutable.js",
-      "require": "./dist/cjs/immutable.cjs"
+      "import": "./dist/esm/immutable.mjs",
+      "require": "./dist/immutable.js"
     },
     "./infinite": {
-      "import": "./dist/esm/infinite.js",
-      "require": "./dist/cjs/infinite.cjs"
+      "import": "./dist/esm/infinite.mjs",
+      "require": "./dist/infinite.js"
     },
     "./mutate": {
-      "import": "./dist/esm/mutate.js",
-      "require": "./dist/cjs/mutate.cjs"
+      "import": "./dist/esm/mutate.mjs",
+      "require": "./dist/mutate.js"
     },
     "./query": {
-      "import": "./dist/esm/query.js",
-      "require": "./dist/cjs/query.cjs"
+      "import": "./dist/esm/query.mjs",
+      "require": "./dist/query.js"
     }
   },
   "sideEffects": false,
