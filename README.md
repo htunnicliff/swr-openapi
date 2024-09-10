@@ -49,7 +49,7 @@ const { data, error, isLoading, isValidating, mutate } = useSandwiches(
         id: "123", // <- Fully typed params!
       },
     },
-  }
+  },
 );
 ```
 
@@ -101,7 +101,7 @@ const useQuery = createQueryHook(/* ... */);
 const { data, error, isLoading, isValidating, mutate } = useQuery(
   path,
   init,
-  config
+  config,
 );
 ```
 
@@ -127,7 +127,7 @@ function useQuery(path, ...[init, config]) {
       }
       return res.data;
     },
-    config
+    config,
   );
 }
 ```
@@ -154,7 +154,7 @@ const useImmutable = createImmutableHook(/* ... */);
 const { data, error, isLoading, isValidating, mutate } = useImmutable(
   path,
   init,
-  config
+  config,
 );
 ```
 
