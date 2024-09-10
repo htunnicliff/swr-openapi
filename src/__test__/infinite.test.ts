@@ -7,7 +7,7 @@ import type { paths } from "./fixtures/petstore.js";
 
 // Mock `useCallback` (return given function as-is)
 vi.mock("react");
-const { useCallback, useMemo } = vi.mocked(React);
+const { useCallback, useMemo, useDebugValue } = vi.mocked(React);
 useCallback.mockImplementation((fn) => fn);
 useMemo.mockImplementation((fn) => fn());
 
@@ -99,5 +99,17 @@ describe("createInfiniteHook", () => {
       expect.any(Function),
       undefined,
     );
+  });
+
+  it("invokes debug value hook with path", () => {
+    useInfinite("/pet/findByStatus", () => null);
+
+    expect(useDebugValue).toHaveBeenLastCalledWith("/pet/findByStatus");
+
+    useInfinite("/pet/findByTags", () => ({
+      params: { query: { tags: ["tag1"] } },
+    }));
+
+    expect(useDebugValue).toHaveBeenLastCalledWith("/pet/findByTags");
   });
 });

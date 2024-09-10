@@ -6,7 +6,7 @@ import useSWRInfinite, {
   type SWRInfiniteKeyLoader,
 } from "swr/infinite";
 import type { TypesForGetRequest } from "./types.js";
-import { useCallback } from "react";
+import { useCallback, useDebugValue } from "react";
 
 /**
  * ```ts
@@ -49,6 +49,8 @@ export function createInfiniteHook<
   ) {
     type Key = [Prefix, Path, Init | undefined] | null;
     type KeyLoader = SWRInfiniteKeyLoader<Data, Key>;
+
+    useDebugValue(path);
 
     const fetcher: SWRInfiniteFetcher<Data, KeyLoader> = useCallback(
       async ([_, path, init]) => {

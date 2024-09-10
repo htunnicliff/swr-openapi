@@ -1,6 +1,6 @@
 import type { Client } from "openapi-fetch";
 import type { MediaType, PathsWithMethod } from "openapi-typescript-helpers";
-import { useCallback } from "react";
+import { useCallback, useDebugValue } from "react";
 import { type MutatorCallback, type MutatorOptions, useSWRConfig } from "swr";
 import type { PartialDeep } from "type-fest";
 import type { TypesForGetRequest } from "./types.js";
@@ -38,6 +38,8 @@ export function createMutateHook<
 >(client: Client<Paths, IMediaType>, prefix: string, compare: CompareFn) {
   return function useMutate() {
     const { mutate: swrMutate } = useSWRConfig();
+
+    useDebugValue(prefix);
 
     function mutate<
       Path extends PathsWithMethod<Paths, "get">,

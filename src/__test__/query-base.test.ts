@@ -7,7 +7,7 @@ import type { paths } from "./fixtures/petstore.js";
 
 // Mock `useCallback` (return given function as-is)
 vi.mock("react");
-const { useCallback, useMemo } = vi.mocked(React);
+const { useCallback, useMemo, useDebugValue } = vi.mocked(React);
 useCallback.mockImplementation((fn) => fn);
 useMemo.mockImplementation((fn) => fn());
 
@@ -112,5 +112,15 @@ describe("configureBaseQueryHook", () => {
       expect.any(Function),
       { errorRetryCount: 56 },
     );
+  });
+
+  it("invokes debug value hook with path", () => {
+    useQuery("/pet/findByStatus");
+
+    expect(useDebugValue).toHaveBeenLastCalledWith("/pet/findByStatus");
+
+    useQuery("/pet/{petId}", { params: { path: { petId: 4 } } });
+
+    expect(useDebugValue).toHaveBeenLastCalledWith("/pet/{petId}");
   });
 });

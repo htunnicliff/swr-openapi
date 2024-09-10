@@ -6,7 +6,7 @@ import type {
 } from "openapi-typescript-helpers";
 import type { Fetcher, SWRHook } from "swr";
 import type { TypesForGetRequest } from "./types.js";
-import { useCallback, useMemo } from "react";
+import { useCallback, useDebugValue, useMemo } from "react";
 
 /**
  * @private
@@ -30,6 +30,8 @@ export function configureBaseQueryHook(useHook: SWRHook) {
         ? [(Init | null)?, Config?]
         : [Init | null, Config?]
     ) {
+      useDebugValue(path);
+
       const key = useMemo(
         () => (init !== null ? ([prefix, path, init] as const) : null),
         [prefix, path, init],

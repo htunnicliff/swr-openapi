@@ -9,7 +9,7 @@ import type { paths } from "./fixtures/petstore.js";
 
 // Mock `useCallback` (return given function as-is)
 vi.mock("react");
-const { useCallback } = vi.mocked(React);
+const { useCallback, useDebugValue } = vi.mocked(React);
 useCallback.mockImplementation((fn) => fn);
 
 // Mock `useSWRConfig`
@@ -76,6 +76,12 @@ describe("createMutateHook", () => {
       // Config
       false,
     );
+  });
+
+  it("invokes debug value hook with client prefix", () => {
+    useMutate();
+
+    expect(useDebugValue).toHaveBeenLastCalledWith("<unique-key>");
   });
 
   describe("useMutate -> mutate -> key matcher", () => {
