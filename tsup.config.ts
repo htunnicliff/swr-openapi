@@ -1,13 +1,14 @@
-import { execSync } from "child_process";
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/index.ts"],
-  sourcemap: true,
-  clean: true,
+  entryPoints: [
+    "src/immutable.ts",
+    "src/infinite.ts",
+    "src/mutate.ts",
+    "src/query.ts",
+  ],
   format: ["cjs", "esm"],
-  async onSuccess() {
-    // Generate TypeScript types
-    execSync("tsc --emitDeclarationOnly --declaration");
-  },
+  dts: true,
+  outDir: "dist",
+  clean: true,
 });
