@@ -1,7 +1,7 @@
 {
   "name": "swr-openapi",
   "type": "commonjs",
-  "version": "5.0.0-rc.5",
+  "version": "5.0.0-rc.6",
   "description": "Generate SWR hooks from OpenAPI schemas",
   "license": "MIT",
   "repository": {
