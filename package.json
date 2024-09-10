@@ -15,12 +15,59 @@
   "engines": {
     "node": ">=18"
   },
+  "main": "dist/query.cjs",
+  "module": "dist/query.js",
   "exports": {
-    ".": "./dist/query.js",
-    "./immutable": "./dist/immutable.js",
-    "./infinite": "./dist/infinite.js",
-    "./mutate": "./dist/mutate.js",
-    "./query": "./dist/query.js"
+    ".": {
+      "import": {
+        "types": "./dist/query.d.ts",
+        "default": "./dist/query.js"
+      },
+      "require": {
+        "types": "./dist/query.d.cts",
+        "default": "./dist/query.cjs"
+      }
+    },
+    "./immutable": {
+      "import": {
+        "types": "./dist/immutable.d.ts",
+        "default": "./dist/immutable.js"
+      },
+      "require": {
+        "types": "./dist/immutable.d.cts",
+        "default": "./dist/immutable.cjs"
+      }
+    },
+    "./infinite": {
+      "import": {
+        "types": "./dist/infinite.d.ts",
+        "default": "./dist/infinite.js"
+      },
+      "require": {
+        "types": "./dist/infinite.d.cts",
+        "default": "./dist/infinite.cjs"
+      }
+    },
+    "./mutate": {
+      "import": {
+        "types": "./dist/mutate.d.ts",
+        "default": "./dist/mutate.js"
+      },
+      "require": {
+        "types": "./dist/mutate.d.cts",
+        "default": "./dist/mutate.cjs"
+      }
+    },
+    "./query": {
+      "import": {
+        "types": "./dist/query.d.ts",
+        "default": "./dist/query.js"
+      },
+      "require": {
+        "types": "./dist/query.d.cts",
+        "default": "./dist/query.cjs"
+      }
+    }
   },
   "sideEffects": false,
   "files": [
@@ -38,16 +85,16 @@
     "fetch"
   ],
   "scripts": {
-    "prepublish": "npm run build && npm run types:check && npm run format:check && npm test",
-    "build": "del ./dist && tsc --project tsconfig.build.json",
+    "prepare": "husky",
+    "prepublishOnly": "npm run build && npm run exports:check && npm run types:check && npm run format:check && npm test",
+    "build": "tsup",
     "test": "vitest run",
     "test:dev": "vitest dev",
     "lint": "eslint './src/**/*'",
     "types:check": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "exports:check": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
-    "prepare": "husky"
+    "exports:check": "attw --ignore-rules no-resolution --pack ."
   },
   "dependencies": {
     "openapi-typescript-helpers": "0.0.13",
@@ -59,15 +106,16 @@
     "@types/eslint__js": "8.42.3",
     "@types/eslint-config-prettier": "6.11.3",
     "@types/react": "18.3.5",
-    "del-cli": "5.1.0",
     "eslint": "9.10.0",
     "eslint-config-prettier": "9.1.0",
+    "husky": "9.1.5",
     "lint-staged": "15.2.10",
     "openapi-fetch": "0.12.0",
     "openapi-typescript": "7.4.0",
     "prettier": "3.3.3",
     "react": "18.3.1",
     "swr": "2.2.5",
+    "tsup": "8.2.4",
     "typescript": "5.5.4",
     "typescript-eslint": "8.5.0",
     "vitest": "2.0.5"
