@@ -15,8 +15,6 @@
   "engines": {
     "node": ">=18"
   },
-  "main": "dist/query.cjs",
-  "module": "dist/query.js",
   "exports": {
     ".": {
       "import": {
