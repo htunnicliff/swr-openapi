@@ -20,12 +20,12 @@
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/query.d.ts",
-        "default": "./dist/query.js"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       },
       "require": {
-        "types": "./dist/query.d.cts",
-        "default": "./dist/query.cjs"
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
       }
     },
     "./immutable": {

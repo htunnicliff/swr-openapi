@@ -3,6 +3,7 @@ import { defineConfig } from "tsup";
 export default defineConfig({
   entryPoints: [
     "src/immutable.ts",
+    "src/index.ts",
     "src/infinite.ts",
     "src/mutate.ts",
     "src/query.ts",
