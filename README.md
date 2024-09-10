@@ -374,7 +374,9 @@ function useMutate() {
 
 ### Returns
 
-- The updated data, as a promise.
+- A promise containing an array, where each array item is either updated data for a matched key or `undefined`.
+
+> SWR's `mutate` signature specifies that when a matcher function is used, the return type will be [an array](https://github.com/vercel/swr/blob/1585a3e37d90ad0df8097b099db38f1afb43c95d/src/_internal/types.ts#L426). Since our wrapper uses a key matcher function, it will always return an array type.
 
 ### `compare`
 
@@ -466,5 +468,6 @@ useQuery("/path", {
 [swr-infinite-return]: https://swr.vercel.app/docs/pagination#return-values
 [swr-infinite-options]: https://swr.vercel.app/docs/pagination#parameters
 [swr-global-mutate]: https://swr.vercel.app/docs/mutation#global-mutate
+[swr-bound-mutate]: https://swr.vercel.app/docs/mutation#bound-mutate
 [swr-mutate-params]: https://swr.vercel.app/docs/mutation#parameters
 [lodash-is-match]: https://lodash.com/docs/4.17.15#isMatch
