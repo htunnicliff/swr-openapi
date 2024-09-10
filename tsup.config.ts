@@ -1,33 +1,16 @@
-import { defineConfig, type Options } from "tsup";
+import { defineConfig } from "tsup";
 
-const shared: Options = {
+export default defineConfig({
+  entryPoints: [
+    "src/index.ts",
+    "src/immutable.ts",
+    "src/infinite.ts",
+    "src/mutate.ts",
+    "src/query.ts",
+  ],
+  format: "esm",
+  outDir: "dist",
   dts: true,
   clean: true,
-};
-
-export default defineConfig([
-  {
-    entryPoints: [
-      "src/index.ts",
-      "src/immutable.ts",
-      "src/infinite.ts",
-      "src/mutate.ts",
-      "src/query.ts",
-    ],
-    format: "cjs",
-    outDir: "dist",
-    ...shared,
-  },
-  {
-    entryPoints: [
-      "src/index.ts",
-      "src/immutable.ts",
-      "src/infinite.ts",
-      "src/mutate.ts",
-      "src/query.ts",
-    ],
-    format: "esm",
-    outDir: "dist/esm",
-    ...shared,
-  },
-]);
+  sourcemap: true,
+});

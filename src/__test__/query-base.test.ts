@@ -1,8 +1,8 @@
 import createClient from "openapi-fetch";
 import * as SWR from "swr";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { paths } from "./fixtures/petstore";
-import { configureBaseQueryHook } from "../query-base";
+import type { paths } from "./fixtures/petstore.js";
+import { configureBaseQueryHook } from "../query-base.js";
 
 // Mock `useSWR`
 vi.mock("swr");

@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { configureBaseQueryHook } from "./query-base";
+import { configureBaseQueryHook } from "./query-base.js";
 
 /**
  * ```ts

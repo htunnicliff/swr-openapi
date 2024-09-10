@@ -12,7 +12,8 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
-    "module": "Preserve",
+    "module": "Node16",
+    "moduleResolution": "Node16",
     "noEmit": true
   },
   "exclude": ["dist/"]

@@ -1,6 +1,6 @@
 {
   "name": "swr-openapi",
-  "type": "commonjs",
+  "type": "module",
   "version": "5.0.0-rc.7",
   "description": "Generate SWR hooks from OpenAPI schemas",
   "license": "MIT",
@@ -15,63 +15,26 @@
   "engines": {
     "node": ">=18"
   },
-  "main": "dist/index.js",
-  "module": "dist/esm/index.mjs",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/esm/index.d.mts",
-        "default": "./dist/esm/index.mjs"
-      },
-      "module": "./dist/esm/index.mjs",
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      }
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     },
     "./immutable": {
-      "import": {
-        "types": "./dist/esm/immutable.d.mts",
-        "default": "./dist/esm/immutable.mjs"
-      },
-      "module": "./dist/esm/immutable.mjs",
-      "require": {
-        "types": "./dist/immutable.d.ts",
-        "default": "./dist/immutable.js"
-      }
+      "types": "./dist/immutable.d.ts",
+      "import": "./dist/immutable.js"
     },
     "./infinite": {
-      "import": {
-        "types": "./dist/esm/infinite.d.mts",
-        "default": "./dist/esm/infinite.mjs"
-      },
-      "module": "./dist/esm/infinite.mjs",
-      "require": {
-        "types": "./dist/infinite.d.ts",
-        "default": "./dist/infinite.js"
-      }
+      "types": "./dist/infinite.d.ts",
+      "import": "./dist/infinite.js"
     },
     "./mutate": {
-      "import": {
-        "types": "./dist/esm/mutate.d.mts",
-        "default": "./dist/esm/mutate.mjs"
-      },
-      "module": "./dist/esm/mutate.mjs",
-      "require": {
-        "types": "./dist/mutate.d.ts",
-        "default": "./dist/mutate.js"
-      }
+      "types": "./dist/mutate.d.ts",
+      "import": "./dist/mutate.js"
     },
     "./query": {
-      "import": {
-        "types": "./dist/esm/query.d.mts",
-        "default": "./dist/esm/query.mjs"
-      },
-      "module": "./dist/esm/query.mjs",
-      "require": {
-        "types": "./dist/query.d.ts",
-        "default": "./dist/query.js"
-      }
+      "types": "./dist/query.d.ts",
+      "import": "./dist/query.js"
     }
   },
   "sideEffects": false,
@@ -99,7 +62,7 @@
     "types:check": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "exports:check": "attw --pack . --ignore-rules=no-resolution"
+    "exports:check": "attw --pack . --ignore-rules no-resolution --ignore-rules cjs-resolves-to-esm"
   },
   "dependencies": {
     "openapi-typescript-helpers": "0.0.13",

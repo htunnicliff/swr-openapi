@@ -1,6 +1,6 @@
 import useSWRImmutable from "swr/immutable";
 import { describe, expect, it, vi } from "vitest";
-import * as QueryBase from "../query-base";
+import * as QueryBase from "../query-base.js";
 
 vi.mock("../query-base.js");
 const { configureBaseQueryHook } = vi.mocked(QueryBase);
