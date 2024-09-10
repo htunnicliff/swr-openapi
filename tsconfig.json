@@ -13,8 +13,6 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "module": "NodeNext",
-    "sourceMap": true,
-    "declaration": true,
     "noEmit": true
   },
   "exclude": ["dist/"]

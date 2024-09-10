@@ -18,52 +18,52 @@
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
       },
       "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
+        "types": "./dist/cjs/index.d.cts",
+        "default": "./dist/cjs/index.cjs"
       }
     },
     "./immutable": {
       "import": {
-        "types": "./dist/immutable.d.ts",
-        "default": "./dist/immutable.js"
+        "types": "./dist/esm/immutable.d.ts",
+        "default": "./dist/esm/immutable.js"
       },
       "require": {
-        "types": "./dist/immutable.d.cts",
-        "default": "./dist/immutable.cjs"
+        "types": "./dist/cjs/immutable.d.cts",
+        "default": "./dist/cjs/immutable.cjs"
       }
     },
     "./infinite": {
       "import": {
-        "types": "./dist/infinite.d.ts",
-        "default": "./dist/infinite.js"
+        "types": "./dist/esm/infinite.d.ts",
+        "default": "./dist/esm/infinite.js"
       },
       "require": {
-        "types": "./dist/infinite.d.cts",
-        "default": "./dist/infinite.cjs"
+        "types": "./dist/cjs/infinite.d.cts",
+        "default": "./dist/cjs/infinite.cjs"
       }
     },
     "./mutate": {
       "import": {
-        "types": "./dist/mutate.d.ts",
-        "default": "./dist/mutate.js"
+        "types": "./dist/esm/mutate.d.ts",
+        "default": "./dist/esm/mutate.js"
       },
       "require": {
-        "types": "./dist/mutate.d.cts",
-        "default": "./dist/mutate.cjs"
+        "types": "./dist/cjs/mutate.d.cts",
+        "default": "./dist/cjs/mutate.cjs"
       }
     },
     "./query": {
       "import": {
-        "types": "./dist/query.d.ts",
-        "default": "./dist/query.js"
+        "types": "./dist/esm/query.d.ts",
+        "default": "./dist/esm/query.js"
       },
       "require": {
-        "types": "./dist/query.d.cts",
-        "default": "./dist/query.cjs"
+        "types": "./dist/cjs/query.d.cts",
+        "default": "./dist/cjs/query.cjs"
       }
     }
   },
@@ -92,7 +92,7 @@
     "types:check": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "exports:check": "attw --ignore-rules no-resolution --pack ."
+    "exports:check": "attw --pack ."
   },
   "dependencies": {
     "openapi-typescript-helpers": "0.0.13",
