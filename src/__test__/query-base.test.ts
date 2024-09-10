@@ -87,7 +87,7 @@ describe("configureBaseQueryHook", () => {
       error: new Error("Yikes"),
     });
 
-    expect(() =>
+    await expect(() =>
       fetcher!(["some-key", "any-path", { some: "init" }]),
     ).rejects.toThrowError(new Error("Yikes"));
   });

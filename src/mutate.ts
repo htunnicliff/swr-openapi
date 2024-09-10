@@ -17,7 +17,9 @@ import type { PartialDeep } from "type-fest";
  *
  * const client = createClient();
  *
- * const mutate = useMutate(client, "<unique-key>", isMatch);
+ * const useMutate = createMutateHook(client, "<unique-key>", isMatch);
+ *
+ * const mutate = useMutate();
  *
  * // Revalidate all keys matching this path
  * await mutate(["/pets"]);
@@ -32,7 +34,10 @@ import type { PartialDeep } from "type-fest";
  * );
  * ```
  */
-export function useMutate<Paths extends {}, IMediaType extends MediaType>(
+export function createMutateHook<
+  Paths extends {},
+  IMediaType extends MediaType,
+>(
   _client: Client<Paths, IMediaType>,
   prefix: string,
   // Types are loose here to support ecosystem utilities like _.isMatch
@@ -53,46 +58,48 @@ export function useMutate<Paths extends {}, IMediaType extends MediaType>(
     Init
   >;
 
-  const { mutate } = useSWRConfig();
+  return function useMutate() {
+    const { mutate } = useSWRConfig();
 
-  return useCallback(
-    <
-      Path extends GetPath,
-      Init extends GetInit<Path>,
-      Data extends GetData<Path, Init>,
-    >(
-      [path, init]: RequiredKeysOf<Init> extends never
-        ? [Path, PartialDeep<Init>?]
-        : [Path, Init],
-      data?: Data | Promise<Data> | MutatorCallback<Data>,
-      opts?: MutatorOptions<Data>,
-    ) => {
-      return mutate<Data>(
-        (key) => {
-          if (
-            // Must be array
-            !Array.isArray(key) ||
-            // Must have 2 or 3 elements (prefix, path, optional init)
-            ![2, 3].includes(key.length)
-          ) {
-            return false;
-          }
+    return useCallback(
+      <
+        Path extends GetPath,
+        Init extends GetInit<Path>,
+        Data extends GetData<Path, Init>,
+      >(
+        [path, init]: RequiredKeysOf<Init> extends never
+          ? [Path, PartialDeep<Init>?]
+          : [Path, Init],
+        data?: Data | Promise<Data> | MutatorCallback<Data>,
+        opts?: MutatorOptions<Data>,
+      ) => {
+        return mutate<Data>(
+          (key) => {
+            if (
+              // Must be array
+              !Array.isArray(key) ||
+              // Must have 2 or 3 elements (prefix, path, optional init)
+              ![2, 3].includes(key.length)
+            ) {
+              return false;
+            }
 
-          const [keyPrefix, keyPath, keyOptions] = key;
+            const [keyPrefix, keyPath, keyOptions] = key as unknown[];
 
-          return (
-            // Matching prefix
-            keyPrefix === prefix &&
-            // Matching path
-            keyPath === path &&
-            // Matching options
-            (init ? compare(keyOptions, init) : true)
-          );
-        },
-        data,
-        opts,
-      );
-    },
-    [mutate, prefix, compare],
-  );
+            return (
+              // Matching prefix
+              keyPrefix === prefix &&
+              // Matching path
+              keyPath === path &&
+              // Matching options
+              (init ? compare(keyOptions, init) : true)
+            );
+          },
+          data,
+          opts,
+        );
+      },
+      [mutate, prefix, compare],
+    );
+  };
 }

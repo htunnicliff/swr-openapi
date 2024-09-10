@@ -3,8 +3,9 @@ import * as React from "react";
 import * as SWR from "swr";
 import type { ScopedMutator } from "swr/_internal";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { useMutate } from "../mutate.js";
+import { createMutateHook } from "../mutate.js";
 import type { paths } from "./fixtures/petstore.js";
+import { isMatch } from "lodash";
 
 // Mock `useCallback` (return given function as-is)
 vi.mock("react");
@@ -27,19 +28,20 @@ const getKeyMatcher = () => {
   return swrMutate.mock.lastCall![0] as ScopedMutator;
 };
 
-describe("useMutate", () => {
+const useMutate = createMutateHook(
+  client,
+  "<unique-key>",
+  // @ts-expect-error - not going to compare for most tests
+  null,
+);
+const mutate = useMutate();
+
+describe("createMutateHook", () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
   it("returns callback that invokes swr `mutate` with fn, data and options", async () => {
-    const mutate = useMutate(
-      client,
-      "<unique-key>",
-      // @ts-expect-error - not going to compare for this test
-      null,
-    );
-
     expect(swrMutate).not.toHaveBeenCalled();
 
     const data = {
@@ -62,15 +64,8 @@ describe("useMutate", () => {
   });
 
   describe("useMutate -> mutate -> key matcher", () => {
-    it("returns false for non-array keys", () => {
-      const mutate = useMutate(
-        client,
-        "<unique-key>",
-        // @ts-expect-error - not going to compare for this test
-        null,
-      );
-
-      mutate(["/pet/findByTags"]);
+    it("returns false for non-array keys", async () => {
+      await mutate(["/pet/findByTags"]);
       const keyMatcher = getKeyMatcher();
 
       expect(keyMatcher(null)).toBe(false);
@@ -79,15 +74,8 @@ describe("useMutate", () => {
       expect(keyMatcher({})).toBe(false);
     });
 
-    it("returns false for arrays with length !== 3", () => {
-      const mutate = useMutate(
-        client,
-        "<unique-key>",
-        // @ts-expect-error - not going to compare for this test
-        null,
-      );
-
-      mutate(["/pet/findByTags"]);
+    it("returns false for arrays with length !== 3", async () => {
+      await mutate(["/pet/findByTags"]);
       const keyMatcher = getKeyMatcher();
 
       expect(keyMatcher(Array(0))).toBe(false);
@@ -97,15 +85,8 @@ describe("useMutate", () => {
       expect(keyMatcher(Array(5))).toBe(false);
     });
 
-    it("matches when prefix and path are equal and init isn't given", () => {
-      const mutate = useMutate(
-        client,
-        "<unique-key>",
-        // @ts-expect-error - not going to compare for this test
-        null,
-      );
-
-      mutate(["/pet/findByTags"]);
+    it("matches when prefix and path are equal and init isn't given", async () => {
+      await mutate(["/pet/findByTags"]);
       const keyMatcher = getKeyMatcher();
 
       // Same path, no init
@@ -122,15 +103,16 @@ describe("useMutate", () => {
       );
     });
 
-    it("returns compare result when prefix and path are equal and init is given", () => {
+    it("returns compare result when prefix and path are equal and init is given", async () => {
       const psudeoCompare = vi.fn().mockReturnValue("booleanPlaceholder");
 
       const prefix = "<unique-key>";
       const path = "/pet/findByTags";
       const givenInit = {};
 
-      const mutate = useMutate(client, prefix, psudeoCompare);
-      mutate([path, givenInit]);
+      const useMutate = createMutateHook(client, prefix, psudeoCompare);
+      const mutate = useMutate();
+      await mutate([path, givenInit]);
       const keyMatcher = getKeyMatcher();
 
       const result = keyMatcher([
@@ -147,5 +129,39 @@ describe("useMutate", () => {
       // Note: compare result is returned (real world would be boolean)
       expect(result).toBe("booleanPlaceholder");
     });
+  });
+});
+
+describe("createMutateHook with lodash.isMatch as `compare`", () => {
+  const useMutate = createMutateHook(client, "<unique-key>", isMatch);
+  const mutate = useMutate();
+
+  it("returns true when init is a subset of key init", async () => {
+    await mutate([
+      "/pet/findByTags",
+      {
+        params: {
+          query: {
+            tags: ["tag1"],
+          },
+        },
+      },
+    ]);
+    const keyMatcher = getKeyMatcher();
+
+    expect(
+      keyMatcher([
+        "<unique-key>",
+        "/pet/findByTags",
+        {
+          params: {
+            query: {
+              other: "value",
+              tags: ["tag1", "tag2"],
+            },
+          },
+        },
+      ]),
+    ).toBe(true);
   });
 });

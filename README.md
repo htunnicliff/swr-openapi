@@ -67,9 +67,12 @@ Wrapper hooks are provided 1:1 for each hook exported by SWR.
 
 ```ts
 import createClient from "openapi-fetch";
-import { createQueryHook } from "swr-openapi"; // or "swr-openapi/query"
+
+import { createQueryHook } from "swr-openapi";
 import { createImmutableHook } from "swr-openapi/immutable";
 import { createInfiniteHook } from "swr-openapi/infinite";
+import { createMutateHook } from "swr-openapi/mutate";
+
 import { paths as SomeApiPaths } from "./some-api";
 
 const client = createClient<SomeApiPaths>(/* ... */);
@@ -78,20 +81,26 @@ const prefix = "some-api";
 export const useQuery = createQueryHook(client, prefix);
 export const useImmutable = createImmutableHook(client, prefix);
 export const useInfinite = createInfiniteHook(client, prefix);
+export const useMutate = createMutateHook(client, prefix, _.isMatch);
 ```
 
 ### Parameters
 
-Each builder hook accepts the same parameters:
+Each builder hook accepts the same initial parameters:
 
 - `client`: An OpenAPI fetch [client][oai-fetch-client].
 - `prefix`: A prefix unique to the fetch client.
+
+`createMutateHook` also accepts a third parameter:
+
+- [`compare`](#compare): A function to compare fetch options).
 
 ### Returns
 
 - `createQueryHook` &rarr; [`useQuery`](#usequery)
 - `createImmutableHook` &rarr; [`useImmutable`](#useimmutable)
 - `createInfiniteHook` &rarr; [`useInfinite`](#useinfinite)
+- `createMutateHook` &rarr; [`useMutate`](#usemutate)
 
 ## `useQuery`
 
@@ -137,10 +146,12 @@ function useQuery(path, ...[init, config]) {
 ### Parameters
 
 - `path`: Any endpoint that supports `GET` requests.
-- `init`:
-  - [Fetch options][oai-fetch-options] for the chosen endpoint (optional when no params are required by the endpoint).
+- `init`: (_sometimes optional_[^1])
+  - [Fetch options][oai-fetch-options] for the chosen endpoint.
   - `null` to skip the request (see [SWR Conditional Fetching][swr-conditional-fetching]).
-- `config`: [SWR options][swr-options] (optional).
+- `config`: (_optional_) [SWR options][swr-options].
+
+[^1]: When an endpoint has required params, `init` will be required, otherwise `init` will be optional.
 
 ### Returns
 
@@ -211,7 +222,7 @@ function useInfinite(path, getInit, config) {
 
 - `path`: Any endpoint that supports `GET` requests.
 - `getInit`: A function that returns the fetch options for a given page ([learn more](#getinit)).
-- `config`: [SWR infinite options][swr-infinite-options] (optional).
+- `config`: (_optional_) [SWR infinite options][swr-infinite-options].
 
 ### Returns
 
@@ -306,6 +317,142 @@ useInfinite("/something", (pageIndex, previousPageData) => {
 
 ## `useMutate`
 
+```ts
+const mutate = useMutate();
+
+await mutate([path, init], data, options);
+```
+
+`useMutate` is a wrapper around SWR's [global mutate][swr-global-mutate] function. It provides a type-safe mechanism for updating and revalidating SWR's client-side cache for specific endpoints.
+
+Like global mutate, this mutate wrapper accepts three parameters: `key`, `data`, and `options`. The latter two parameters are identical to those in _bound mutate_. `key` can be either a path alone, or a path with fetch options.
+
+The level of specificity used when defining the key will determine which cached requests are updated. If only a path is provided, any cached request using that path will be updated. If fetch options are included in the key, the [`compare`](#compare) function will determine if a cached request's fetch options match the key's fetch options.
+
+<details>
+<summary>How <code>useMutate</code> works</summary>
+
+```ts
+function useMutate() {
+  const { mutate } = useSWRConfig();
+  return useCallback(
+    ([path, init], data, opts) => {
+      return mutate(
+        (key) => {
+          if (!Array.isArray(key) || ![2, 3].includes(key.length)) {
+            return false;
+          }
+          const [keyPrefix, keyPath, keyOptions] = key;
+          return (
+            keyPrefix === prefix &&
+            keyPath === path &&
+            (init ? compare(keyOptions, init) : true)
+          );
+        },
+        data,
+        opts,
+      );
+    },
+    [mutate, prefix, compare],
+  );
+}
+```
+
+</details>
+
+### Parameters
+
+- `key`:
+  - `path`: Any endpoint that supports `GET` requests.
+  - `init`: (_optional_) Partial fetch options for the chosen endpoint.
+- `data`: (_optional_)
+  - Data to update the client cache.
+  - An async function for a remote mutation.
+- `options`: (_optional_) [SWR mutate options][swr-mutate-params].
+
+### Returns
+
+- The updated data, as a promise.
+
+### `compare`
+
+When calling `createMutateHook`, a function must be provided with the following contract:
+
+```ts
+type Compare = (init: any, partialInit: object) => boolean;
+```
+
+This function is used to determine whether or not a cached request should be updated when `mutate` is called with fetch options.
+
+My personal recommendation is to use lodash's [`isMatch`][lodash-is-match]:
+
+> Performs a partial deep comparison between object and source to determine if object contains equivalent property values.
+
+```ts
+const useMutate = createMutateHook(client, "<unique-key>", isMatch);
+
+const mutate = useMutate();
+
+await mutate([
+  "/path",
+  {
+    params: {
+      query: {
+        version: "beta",
+      },
+    },
+  },
+]);
+
+// ✅ Would be updated
+useQuery("/path", {
+  params: {
+    query: {
+      version: "beta",
+    },
+  },
+});
+
+// ✅ Would be updated
+useQuery("/path", {
+  params: {
+    query: {
+      version: "beta",
+      other: true,
+      example: [1, 2, 3],
+    },
+  },
+});
+
+// ❌ Would not be updated
+useQuery("/path", {
+  params: {
+    query: {},
+  },
+});
+
+// ❌ Would not be updated
+useQuery("/path");
+
+// ❌ Would not be updated
+useQuery("/path", {
+  params: {
+    query: {
+      version: "alpha",
+    },
+  },
+});
+
+// ❌ Would not be updated
+useQuery("/path", {
+  params: {
+    query: {
+      different: "items",
+    },
+  },
+});
+```
+
 [oai-fetch-client]: https://openapi-ts.pages.dev/openapi-fetch/api#createclient
 [oai-fetch-options]: https://openapi-ts.pages.dev/openapi-fetch/api#fetch-options
 [swr-options]: https://swr.vercel.app/docs/api#options
@@ -316,3 +463,6 @@ useInfinite("/something", (pageIndex, previousPageData) => {
 [swr-infinite]: https://swr.vercel.app/docs/pagination#useswrinfinite
 [swr-infinite-return]: https://swr.vercel.app/docs/pagination#return-values
 [swr-infinite-options]: https://swr.vercel.app/docs/pagination#parameters
+[swr-global-mutate]: https://swr.vercel.app/docs/mutation#global-mutate
+[swr-mutate-params]: https://swr.vercel.app/docs/mutation#parameters
+[lodash-is-match]: https://lodash.com/docs/4.17.15#isMatch

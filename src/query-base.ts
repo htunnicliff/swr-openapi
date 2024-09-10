@@ -59,6 +59,11 @@ export function configureBaseQueryHook(useHook: SWRHook) {
         return useHook<Data, Error, Key, Config>(key, fetcher, config);
       }
 
+      // TODO: Why is this lint error occuring?
+      // > Unsafe return of type `SWRResponse<Data, Error, any>` from function
+      // > with return type `SWRResponse<Data, Error, Config>`
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return useHook<Data, Error, Key>(key, fetcher);
     };
   };
