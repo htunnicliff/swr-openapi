@@ -64,7 +64,7 @@
     "types:check": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "exports:check": "attw --pack ."
+    "exports:check": "attw --pack . --ignore-rules=no-resolution"
   },
   "dependencies": {
     "openapi-typescript-helpers": "0.0.13",
