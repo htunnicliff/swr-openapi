@@ -289,6 +289,16 @@ describe("types", () => {
           expectTypeOf(data).toEqualTypeOf<Array<Pet | undefined>>();
         });
       });
+
+      it("accepts promises in data argument", async () => {
+        const data = Promise.resolve([
+          { name: "doggie", photoUrls: ["https://example.com"] },
+        ]);
+
+        const result = await mutate(["/pet/findByStatus"], data);
+
+        expectTypeOf(result).toEqualTypeOf<(Pet[] | undefined)[]>();
+      });
     });
   });
 
