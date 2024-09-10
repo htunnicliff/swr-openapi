@@ -19,24 +19,59 @@
   "module": "dist/esm/index.mjs",
   "exports": {
     ".": {
-      "import": "./dist/esm/index.mjs",
-      "require": "./dist/index.js"
+      "import": {
+        "types": "./dist/esm/index.d.mts",
+        "default": "./dist/esm/index.mjs"
+      },
+      "module": "./dist/esm/index.mjs",
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
     },
     "./immutable": {
-      "import": "./dist/esm/immutable.mjs",
-      "require": "./dist/immutable.js"
+      "import": {
+        "types": "./dist/esm/immutable.d.mts",
+        "default": "./dist/esm/immutable.mjs"
+      },
+      "module": "./dist/esm/immutable.mjs",
+      "require": {
+        "types": "./dist/immutable.d.ts",
+        "default": "./dist/immutable.js"
+      }
     },
     "./infinite": {
-      "import": "./dist/esm/infinite.mjs",
-      "require": "./dist/infinite.js"
+      "import": {
+        "types": "./dist/esm/infinite.d.mts",
+        "default": "./dist/esm/infinite.mjs"
+      },
+      "module": "./dist/esm/infinite.mjs",
+      "require": {
+        "types": "./dist/infinite.d.ts",
+        "default": "./dist/infinite.js"
+      }
     },
     "./mutate": {
-      "import": "./dist/esm/mutate.mjs",
-      "require": "./dist/mutate.js"
+      "import": {
+        "types": "./dist/esm/mutate.d.mts",
+        "default": "./dist/esm/mutate.mjs"
+      },
+      "module": "./dist/esm/mutate.mjs",
+      "require": {
+        "types": "./dist/mutate.d.ts",
+        "default": "./dist/mutate.js"
+      }
     },
     "./query": {
-      "import": "./dist/esm/query.mjs",
-      "require": "./dist/query.js"
+      "import": {
+        "types": "./dist/esm/query.d.mts",
+        "default": "./dist/esm/query.mjs"
+      },
+      "module": "./dist/esm/query.mjs",
+      "require": {
+        "types": "./dist/query.d.ts",
+        "default": "./dist/query.js"
+      }
     }
   },
   "sideEffects": false,
