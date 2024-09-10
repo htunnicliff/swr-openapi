@@ -30,7 +30,7 @@ export function configureBaseQueryHook(useHook: SWRHook) {
         ? [(Init | null)?, Config?]
         : [Init | null, Config?]
     ) {
-      useDebugValue(path);
+      useDebugValue(`${prefix} - ${path as string}`);
 
       const key = useMemo(
         () => (init !== null ? ([prefix, path, init] as const) : null),

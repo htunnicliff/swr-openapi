@@ -50,7 +50,7 @@ export function createInfiniteHook<
     type Key = [Prefix, Path, Init | undefined] | null;
     type KeyLoader = SWRInfiniteKeyLoader<Data, Key>;
 
-    useDebugValue(path);
+    useDebugValue(`${prefix} - ${path as string}`);
 
     const fetcher: SWRInfiniteFetcher<Data, KeyLoader> = useCallback(
       async ([_, path, init]) => {

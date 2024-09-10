@@ -117,10 +117,14 @@ describe("configureBaseQueryHook", () => {
   it("invokes debug value hook with path", () => {
     useQuery("/pet/findByStatus");
 
-    expect(useDebugValue).toHaveBeenLastCalledWith("/pet/findByStatus");
+    expect(useDebugValue).toHaveBeenLastCalledWith(
+      "<unique-key> - /pet/findByStatus",
+    );
 
     useQuery("/pet/{petId}", { params: { path: { petId: 4 } } });
 
-    expect(useDebugValue).toHaveBeenLastCalledWith("/pet/{petId}");
+    expect(useDebugValue).toHaveBeenLastCalledWith(
+      "<unique-key> - /pet/{petId}",
+    );
   });
 });

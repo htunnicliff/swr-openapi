@@ -104,12 +104,16 @@ describe("createInfiniteHook", () => {
   it("invokes debug value hook with path", () => {
     useInfinite("/pet/findByStatus", () => null);
 
-    expect(useDebugValue).toHaveBeenLastCalledWith("/pet/findByStatus");
+    expect(useDebugValue).toHaveBeenLastCalledWith(
+      "<unique-key> - /pet/findByStatus",
+    );
 
     useInfinite("/pet/findByTags", () => ({
       params: { query: { tags: ["tag1"] } },
     }));
 
-    expect(useDebugValue).toHaveBeenLastCalledWith("/pet/findByTags");
+    expect(useDebugValue).toHaveBeenLastCalledWith(
+      "<unique-key> - /pet/findByTags",
+    );
   });
 });
