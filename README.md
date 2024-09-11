@@ -83,7 +83,11 @@ const prefix = "some-api";
 export const useQuery = createQueryHook(client, prefix);
 export const useImmutable = createImmutableHook(client, prefix);
 export const useInfinite = createInfiniteHook(client, prefix);
-export const useMutate = createMutateHook(client, prefix, _.isMatch);
+export const useMutate = createMutateHook(
+  client,
+  prefix,
+  _.isMatch, // Or any comparision function
+);
 ```
 
 ### Parameters
@@ -105,6 +109,8 @@ Each builder hook accepts the same initial parameters:
 - `createMutateHook` &rarr; [`useMutate`](#usemutate)
 
 ## `useQuery`
+
+This hook is a typed wrapper over [`useSWR`][swr-api].
 
 ```ts
 const useQuery = createQueryHook(/* ... */);
@@ -161,6 +167,8 @@ function useQuery(path, ...[init, config]) {
 
 ## `useImmutable`
 
+This hook has the same contracts as `useQuery`. However, instead of wrapping [`useSWR`][swr-api], it wraps `useSWRImmutable`. This immutable hook [disables automatic revalidations][swr-disable-auto-revalidate] but is otherwise identical to `useSWR`.
+
 ```ts
 const useImmutable = createImmutableHook(/* ... */);
 
@@ -171,8 +179,6 @@ const { data, error, isLoading, isValidating, mutate } = useImmutable(
 );
 ```
 
-This hook has the same contracts as `useQuery`. However, instead of wrapping [`useSWR`][swr-api], it wraps `useSWRImmutable`. This immutable hook [disables automatic revalidations][swr-disable-auto-revalidate] but is otherwise identical to `useSWR`.
-
 ### Parameters
 
 Identical to `useQuery` [parameters](#parameters-1).
@@ -182,6 +188,8 @@ Identical to `useQuery` [parameters](#parameters-1).
 Identical to `useQuery` [returns](#returns-1).
 
 ## `useInfinite`
+
+This hook is a typed wrapper over [`useSWRInfinite`][swr-infinite].
 
 ```ts
 const useInfinite = createInfiniteHook(/* ... */);
@@ -241,9 +249,10 @@ This function is similar to the [`getKey`][swr-infinite-options] parameter accep
   - `undefined` (if on the first page).
   - The fetched response for the last page retrieved.
 
-#### Should Return
+#### Returns
 
 - [Fetch options][oai-fetch-options] for the next page to load.
+- `null` if no more pages should be loaded.
 
 #### Examples
 
@@ -319,17 +328,17 @@ useInfinite("/something", (pageIndex, previousPageData) => {
 
 ## `useMutate`
 
-```ts
-const mutate = useMutate();
-
-await mutate([path, init], data, options);
-```
-
 `useMutate` is a wrapper around SWR's [global mutate][swr-global-mutate] function. It provides a type-safe mechanism for updating and revalidating SWR's client-side cache for specific endpoints.
 
 Like global mutate, this mutate wrapper accepts three parameters: `key`, `data`, and `options`. The latter two parameters are identical to those in _bound mutate_. `key` can be either a path alone, or a path with fetch options.
 
 The level of specificity used when defining the key will determine which cached requests are updated. If only a path is provided, any cached request using that path will be updated. If fetch options are included in the key, the [`compare`](#compare) function will determine if a cached request's fetch options match the key's fetch options.
+
+```ts
+const mutate = useMutate();
+
+await mutate([path, init], data, options);
+```
 
 <details>
 <summary>How <code>useMutate</code> works</summary>
@@ -468,6 +477,5 @@ useQuery("/path", {
 [swr-infinite-return]: https://swr.vercel.app/docs/pagination#return-values
 [swr-infinite-options]: https://swr.vercel.app/docs/pagination#parameters
 [swr-global-mutate]: https://swr.vercel.app/docs/mutation#global-mutate
-[swr-bound-mutate]: https://swr.vercel.app/docs/mutation#bound-mutate
 [swr-mutate-params]: https://swr.vercel.app/docs/mutation#parameters
 [lodash-is-match]: https://lodash.com/docs/4.17.15#isMatch

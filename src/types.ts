@@ -13,6 +13,9 @@ type TryKey<T, K extends PropertyKey> = T extends { [Key in K]?: unknown }
   ? T[K]
   : undefined;
 
+/**
+ * Provides specific types used within a given request
+ */
 export type TypesForRequest<
   Paths extends {},
   Method extends Extract<HttpMethod, keyof Paths[keyof Paths]>,
@@ -40,6 +43,11 @@ export type TypesForRequest<
   SWRResponse: SWRResponse<Data, Error, SWRConfig>;
 };
 
+/**
+ * Provides specific types for GET requests
+ *
+ * Uses {@link TypesForRequest}
+ */
 export type TypesForGetRequest<
   Paths extends {},
   Path extends PathsWithMethod<Paths, Extract<"get", keyof Paths[keyof Paths]>>,

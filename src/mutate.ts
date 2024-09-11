@@ -10,7 +10,10 @@ import type { TypesForGetRequest } from "./types.js";
 export type CompareFn = (init: any, partialInit: any) => boolean;
 
 /**
+ * Produces a typed wrapper for [`useSWRConfig#mutate`](https://swr.vercel.app/docs/mutation).
+ *
  * ```ts
+ * import createClient from "openapi-fetch";
  * import { isMatch } from "lodash";
  *
  * const client = createClient();

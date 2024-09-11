@@ -9,7 +9,10 @@ import type { TypesForGetRequest } from "./types.js";
 import { useCallback, useDebugValue } from "react";
 
 /**
+ * Produces a typed wrapper for [`useSWRInfinite`](https://swr.vercel.app/docs/pagination#useswrinfinite).
+ *
  * ```ts
+ * import createClient from "openapi-fetch";
  * const client = createClient();
  *
  * const useInfinite = createInfiniteHook(client, "<unique-key>");

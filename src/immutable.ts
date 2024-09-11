@@ -2,7 +2,10 @@ import useSWRImmutable from "swr/immutable";
 import { configureBaseQueryHook } from "./query-base.js";
 
 /**
+ * Produces a typed wrapper for [`useSWRImmutable`](https://swr.vercel.app/docs/revalidation.en-US#disable-automatic-revalidations).
+ *
  * ```ts
+ * import createClient from "openapi-fetch";
  * const client = createClient();
  *
  * const useImmutable = createImmutableHook(client, "<unique-key>");

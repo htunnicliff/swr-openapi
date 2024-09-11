@@ -2,7 +2,11 @@ import useSWR from "swr";
 import { configureBaseQueryHook } from "./query-base.js";
 
 /**
+ * Produces a typed wrapper for [`useSWR`](https://swr.vercel.app/docs/api).
+ *
  * ```ts
+ * import createClient from "openapi-fetch";
+ *
  * const client = createClient();
  *
  * const useQuery = createQueryHook(client, "<unique-key>");
