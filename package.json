@@ -23,6 +23,7 @@
   "files": [
     "dist",
     "src",
+    "!src/__test__",
     "LICENSE",
     "README.md"
   ],
