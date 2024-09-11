@@ -1,13 +1,31 @@
+// From the excellent: https://www.totaltypescript.com/how-to-create-an-npm-package
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ES2020",
-    "moduleResolution": "Node",
-    "noUncheckedIndexedAccess": true,
-    "outDir": "dist",
+    /* Base Options: */
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "es2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+
+    /* Strictness */
     "strict": true,
-    "skipLibCheck": true
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+
+    /* If transpiling with TypeScript: */
+    "module": "NodeNext",
+    // "outDir": "dist",
+    // "rootDir": "src",
+    "sourceMap": true,
+
+    /* AND if you're building for a library: */
+    "declaration": true,
+
+    "noEmit": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["dist"]
 }
