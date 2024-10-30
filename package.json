@@ -57,7 +57,7 @@
     "@types/eslint__js": "8.42.3",
     "@types/eslint-config-prettier": "6.11.3",
     "@types/lodash": "4.17.7",
-    "@types/react": "18.3.5",
+    "@types/react": "18.3.12",
     "@vitest/eslint-plugin": "1.1.0",
     "del-cli": "5.1.0",
     "eslint": "9.10.0",
