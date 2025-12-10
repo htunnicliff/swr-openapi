@@ -56,7 +56,10 @@
     "test:js": "vitest run --typecheck",
     "test:exports": "pnpm run build && attw --pack .",
     "prepublish": "pnpm run build",
-    "version": "pnpm run build"
+    "version": "pnpm run build",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "peerDependencies": {
     "openapi-fetch": ">=0.15",
