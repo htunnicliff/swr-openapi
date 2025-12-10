@@ -5,6 +5,7 @@ export default defineConfig({
   title: "SWR OpenAPI",
   description: "Bindings for SWR and OpenAPI schemas",
   cleanUrls: true,
+  base: "/swr-openapi/",
   themeConfig: {
     outline: "deep",
     // https://vitepress.dev/reference/default-theme-config
