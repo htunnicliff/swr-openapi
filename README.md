@@ -8,8 +8,8 @@
   <a aria-label="npm" href="https://www.npmjs.com/package/swr-openapi">
     <img alt="npm" src="https://img.shields.io/npm/v/swr-openapi.svg?style=for-the-badge&labelColor=000000">
   </a>
-  <a aria-label="license" href="https://github.com/openapi-ts/openapi-typescript/blob/main/packages/swr-openapi/LICENSE">
-    <img alt="license" src="https://img.shields.io/github/license/openapi-ts/openapi-typescript.svg?style=for-the-badge&labelColor=000000">
+  <a aria-label="license" href="https://github.com/htunnicliff/swr-openapi/blob/main/LICENSE">
+    <img alt="license" src="https://img.shields.io/github/license/htunnicliff/swr-openapi.svg?style=for-the-badge&labelColor=000000">
   </a>
 </p>
 
