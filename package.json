@@ -89,6 +89,7 @@
     "swr": "2.3.6",
     "typescript": "5.9.3",
     "unbuild": "3.6.1",
+    "vitepress": "^1.6.4",
     "vitest": "3.2.4"
   }
 }

@@ -4,22 +4,21 @@ layout: home
 
 hero:
   name: "SWR OpenAPI"
-  text: "Bindings for SWR and OpenAPI schemas"
-  tagline: My great project tagline
+  tagline: Bindings for SWR and OpenAPI schemas
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: Getting Started
+      link: /getting-started
     - theme: alt
-      text: API Examples
-      link: /api-examples
+      text: API Reference
+      link: /api/hook-builders
 
 features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: Familiar API
+    details: |
+      First-class wrappers for hooks like useQuery, useMutate, and more
+  - title: Type-safe
+    details: Provides type safety for all requests to OpenAPI endpoints
+  - title: Built on trusted tooling
+    details: This package is a thin wrapper over openapi-typescript and openapi-fetch.
 ---
-
