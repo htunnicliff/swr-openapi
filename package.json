@@ -61,7 +61,7 @@
     "@vitest/eslint-plugin": "1.1.0",
     "del-cli": "5.1.0",
     "eslint": "9.10.0",
-    "eslint-config-prettier": "9.1.0",
+    "eslint-config-prettier": "10.1.8",
     "husky": "9.1.5",
     "lint-staged": "15.2.10",
     "lodash": "4.17.21",
