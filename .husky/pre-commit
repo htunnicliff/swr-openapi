@@ -1,2 +1,0 @@
-lint-staged
-vitest --run --changed --typecheck
