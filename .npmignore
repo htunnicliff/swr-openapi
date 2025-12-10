@@ -1,0 +1,4 @@
+.turbo
+*.config.*
+biome.json
+tsconfig*.json
