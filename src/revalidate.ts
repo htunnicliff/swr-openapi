@@ -9,7 +9,8 @@ import type { TypesForGetRequest } from "./types.js";
 export type CompareFn = (init: any, partialInit: any) => boolean;
 
 /**
- * Produces a typed wrapper for [`useSWRConfig#mutate`](https://swr.vercel.app/docs/mutation).
+ * Produces a typed wrapper for [`useSWRConfig#mutate`](https://swr.vercel.app/docs/mutation)
+ * for cache revalidation and invalidation.
  *
  * ```ts
  * import createClient from "openapi-fetch";
@@ -17,35 +18,35 @@ export type CompareFn = (init: any, partialInit: any) => boolean;
  *
  * const client = createClient();
  *
- * const useMutate = createMutateHook(client, "<unique-key>", isMatch);
+ * const useRevalidate = createRevalidateHook(client, "<unique-key>", isMatch);
  *
- * const mutate = useMutate();
+ * const revalidate = useRevalidate();
  *
  * // Revalidate all keys matching this path
- * await mutate(["/pets"]);
- * await mutate(["/pets"], newData);
- * await mutate(["/pets"], undefined, { revalidate: true });
+ * await revalidate(["/pets"]);
+ * await revalidate(["/pets"], newData);
+ * await revalidate(["/pets"], undefined, { revalidate: true });
  *
- * // Revlidate all keys matching this path and this subset of options
- * await mutate(
+ * // Revalidate all keys matching this path and this subset of options
+ * await revalidate(
  *   ["/pets", { query: { limit: 10 } }],
  *   newData,
  *   { revalidate: false }
  * );
  * ```
  */
-export function createMutateHook<Paths extends {}, IMediaType extends MediaType>(
+export function createRevalidateHook<Paths extends {}, IMediaType extends MediaType>(
   client: Client<Paths, IMediaType>,
   prefix: string,
   compare: CompareFn,
 ) {
-  return function useMutate() {
+  return function useRevalidate() {
     const { mutate: swrMutate } = useSWRConfig();
 
     useDebugValue(prefix);
 
     return useCallback(
-      function mutate<
+      function revalidate<
         Path extends PathsWithMethod<Paths, "get">,
         R extends TypesForGetRequest<Paths, Path>,
         Init extends Exact<R["Init"], Init>,

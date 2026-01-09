@@ -4,7 +4,7 @@ import * as React from "react";
 import * as SWR from "swr";
 import type { ScopedMutator } from "swr/_internal";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createMutateHook } from "../mutate.js";
+import { createRevalidateHook } from "../revalidate.js";
 import type { paths } from "./fixtures/petstore.js";
 
 // Mock `useCallback` (return given function as-is)
@@ -28,16 +28,16 @@ const getKeyMatcher = () => {
   return swrMutate.mock.lastCall![0] as ScopedMutator;
 };
 
-const useMutate = createMutateHook(
+const useRevalidate = createRevalidateHook(
   client,
   "<unique-key>",
   // @ts-expect-error - not going to compare for most tests
   null,
 );
 // biome-ignore lint/correctness/useHookAtTopLevel: this is a test
-const mutate = useMutate();
+const revalidate = useRevalidate();
 
-describe("createMutateHook", () => {
+describe("createRevalidateHook", () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
@@ -48,7 +48,7 @@ describe("createMutateHook", () => {
     const data = [{ name: "doggie", photoUrls: ["https://example.com"] }];
     const config = { throwOnError: false };
 
-    await mutate(["/pet/findByStatus"], data, config);
+    await revalidate(["/pet/findByStatus"], data, config);
 
     expect(swrMutate).toHaveBeenCalledTimes(1);
     expect(swrMutate).toHaveBeenLastCalledWith(
@@ -66,7 +66,7 @@ describe("createMutateHook", () => {
 
     const data = [{ name: "doggie", photoUrls: ["https://example.com"] }];
 
-    await mutate(["/pet/findByStatus"], data, false);
+    await revalidate(["/pet/findByStatus"], data, false);
 
     expect(swrMutate).toHaveBeenCalledTimes(1);
     expect(swrMutate).toHaveBeenLastCalledWith(
@@ -80,14 +80,14 @@ describe("createMutateHook", () => {
   });
 
   it("invokes debug value hook with client prefix", () => {
-    useMutate();
+    useRevalidate();
 
     expect(useDebugValue).toHaveBeenLastCalledWith("<unique-key>");
   });
 
-  describe("useMutate -> mutate -> key matcher", () => {
+  describe("useRevalidate -> revalidate -> key matcher", () => {
     it("returns false for non-array keys", async () => {
-      await mutate(["/pet/findByStatus"]);
+      await revalidate(["/pet/findByStatus"]);
       const keyMatcher = getKeyMatcher();
 
       expect(keyMatcher(null)).toBe(false);
@@ -97,7 +97,7 @@ describe("createMutateHook", () => {
     });
 
     it("returns false for arrays with length !== 3", async () => {
-      await mutate(["/pet/findByStatus"]);
+      await revalidate(["/pet/findByStatus"]);
       const keyMatcher = getKeyMatcher();
 
       expect(keyMatcher(Array(0))).toBe(false);
@@ -108,7 +108,7 @@ describe("createMutateHook", () => {
     });
 
     it("matches when prefix and path are equal and init isn't given", async () => {
-      await mutate(["/pet/findByStatus"]);
+      await revalidate(["/pet/findByStatus"]);
       const keyMatcher = getKeyMatcher();
 
       // Same path, no init
@@ -128,9 +128,9 @@ describe("createMutateHook", () => {
       const path = "/pet/findByStatus";
       const givenInit = {};
 
-      const useMutate = createMutateHook(client, prefix, psudeoCompare);
-      const mutate = useMutate();
-      await mutate([path, givenInit]);
+      const useRevalidate = createRevalidateHook(client, prefix, psudeoCompare);
+      const revalidate = useRevalidate();
+      await revalidate([path, givenInit]);
       const keyMatcher = getKeyMatcher();
 
       const result = keyMatcher([
@@ -150,12 +150,12 @@ describe("createMutateHook", () => {
   });
 });
 
-describe("createMutateHook with lodash.isMatch as `compare`", () => {
-  const useMutate = createMutateHook(client, "<unique-key>", isMatch);
-  const mutate = useMutate();
+describe("createRevalidateHook with lodash.isMatch as `compare`", () => {
+  const useRevalidate = createRevalidateHook(client, "<unique-key>", isMatch);
+  const revalidate = useRevalidate();
 
   it("returns true when init is a subset of key init", async () => {
-    await mutate([
+    await revalidate([
       "/pet/findByTags",
       {
         params: {
