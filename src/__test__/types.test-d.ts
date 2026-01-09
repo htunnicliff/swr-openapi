@@ -5,6 +5,7 @@ import type { ScopedMutator } from "swr/_internal";
 import { describe, expectTypeOf, it, vi } from "vitest";
 import { createImmutableHook } from "../immutable.js";
 import { createInfiniteHook } from "../infinite.js";
+import { createMutationHook } from "../mutation.js";
 import { createRevalidateHook } from "../revalidate.js";
 import { createQueryHook } from "../query.js";
 import type { TypesForRequest } from "../types.js";
@@ -30,6 +31,7 @@ const client = createClient<paths>();
 const useQuery = createQueryHook(client, "<unique-key>");
 const useImmutable = createImmutableHook(client, "<unique-key>");
 const useInfinite = createInfiniteHook(client, "<unique-key>");
+const useMutation = createMutationHook(client, "<unique-key>");
 const useRevalidate = createRevalidateHook(
   client,
   "<unique-key>",
@@ -376,6 +378,38 @@ describe("types", () => {
               },
             },
           ]);
+        });
+      });
+    });
+
+    describe("useMutation", () => {
+      it("returns mutation response with trigger function", () => {
+        const { trigger, isMutating } = useMutation("post", "/pet");
+        expectTypeOf(trigger).toBeFunction();
+        expectTypeOf(isMutating).toBeBoolean();
+      });
+
+      it("trigger accepts init with body", async () => {
+        const { trigger } = useMutation("post", "/pet");
+        await trigger({
+          body: { name: "doggie", photoUrls: ["https://example.com/photo.jpg"] },
+        });
+      });
+
+      it("trigger accepts init with path params", async () => {
+        const { trigger } = useMutation("delete", "/pet/{petId}");
+        await trigger({
+          params: { path: { petId: 123 } },
+        });
+      });
+
+      it("trigger accepts init with path params and optional header", async () => {
+        const { trigger } = useMutation("delete", "/pet/{petId}");
+        await trigger({
+          params: {
+            path: { petId: 123 },
+            header: { api_key: "secret" },
+          },
         });
       });
     });

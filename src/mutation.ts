@@ -3,7 +3,6 @@ import type { HttpMethod, MediaType, PathsWithMethod } from "openapi-typescript-
 import { useCallback, useDebugValue } from "react";
 import useSWRMutation from "swr/mutation";
 import type { SWRMutationConfiguration } from "swr/mutation";
-import type { Exact } from "type-fest";
 import type { MutationMethod, TypesForRequest } from "./types.js";
 
 /**
@@ -39,7 +38,7 @@ export function createMutationHook<
     Method extends MutationMethod & Extract<HttpMethod, keyof Paths[keyof Paths]>,
     Path extends PathsWithMethod<Paths, Method>,
     R extends TypesForRequest<Paths, Method, Path>,
-    Init extends Exact<R["Init"], Init>,
+    Init extends R["Init"],
     Data extends R["Data"],
     Error extends R["Error"],
     Config extends SWRMutationConfiguration<Data, Error, readonly [Prefix, Method, Path], Init>,
