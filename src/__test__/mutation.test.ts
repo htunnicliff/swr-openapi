@@ -28,6 +28,7 @@ useSWRMutation.mockReturnValue({
 
 // Setup
 const client = createClient<paths>();
+const useMutation = createMutationHook(client, "<unique-key>");
 const postSpy = vi.spyOn(client, "POST");
 const putSpy = vi.spyOn(client, "PUT");
 const deleteSpy = vi.spyOn(client, "DELETE");
@@ -38,10 +39,8 @@ describe("createMutationHook", () => {
   });
 
   describe("POST mutations", () => {
-    const useMutation = createMutationHook(client, "post", "<unique-key>");
-
     it("passes correct key to useSWRMutation", () => {
-      useMutation("/pet");
+      useMutation("post", "/pet");
 
       expect(useSWRMutation).toHaveBeenLastCalledWith(
         ["<unique-key>", "post", "/pet"],
@@ -57,7 +56,7 @@ describe("createMutationHook", () => {
         response: new Response(),
       });
 
-      useMutation("/pet");
+      useMutation("post", "/pet");
 
       const fetcher = useSWRMutation.mock.lastCall![1] as AnyFetcher;
       const init = { body: { name: "doggie", photoUrls: [] } };
@@ -77,7 +76,7 @@ describe("createMutationHook", () => {
         response: new Response(),
       });
 
-      useMutation("/pet");
+      useMutation("post", "/pet");
 
       const fetcher = useSWRMutation.mock.lastCall![1] as AnyFetcher;
 
@@ -88,10 +87,8 @@ describe("createMutationHook", () => {
   });
 
   describe("PUT mutations", () => {
-    const useMutation = createMutationHook(client, "put", "<unique-key>");
-
     it("passes correct key with put method", () => {
-      useMutation("/pet");
+      useMutation("put", "/pet");
 
       expect(useSWRMutation).toHaveBeenLastCalledWith(
         ["<unique-key>", "put", "/pet"],
@@ -107,7 +104,7 @@ describe("createMutationHook", () => {
         response: new Response(),
       });
 
-      useMutation("/pet");
+      useMutation("put", "/pet");
 
       const fetcher = useSWRMutation.mock.lastCall![1] as AnyFetcher;
       const init = { body: { id: 1, name: "updated", photoUrls: [] } };
@@ -119,10 +116,8 @@ describe("createMutationHook", () => {
   });
 
   describe("DELETE mutations", () => {
-    const useMutation = createMutationHook(client, "delete", "<unique-key>");
-
     it("passes correct key with delete method", () => {
-      useMutation("/pet/{petId}");
+      useMutation("delete", "/pet/{petId}");
 
       expect(useSWRMutation).toHaveBeenLastCalledWith(
         ["<unique-key>", "delete", "/pet/{petId}"],
@@ -138,7 +133,7 @@ describe("createMutationHook", () => {
         response: new Response(),
       });
 
-      useMutation("/pet/{petId}");
+      useMutation("delete", "/pet/{petId}");
 
       const fetcher = useSWRMutation.mock.lastCall![1] as AnyFetcher;
       const init = { params: { path: { petId: 123 } } };
@@ -150,16 +145,14 @@ describe("createMutationHook", () => {
   });
 
   it("invokes debug value hook", () => {
-    const useMutation = createMutationHook(client, "post", "<unique-key>");
-    useMutation("/pet");
+    useMutation("post", "/pet");
 
     expect(useDebugValue).toHaveBeenLastCalledWith("<unique-key> - post /pet");
   });
 
   it("passes config to useSWRMutation", () => {
-    const useMutation = createMutationHook(client, "post", "<unique-key>");
     // @ts-expect-error - Testing config passthrough
-    useMutation("/pet", { throwOnError: false });
+    useMutation("post", "/pet", { throwOnError: false });
 
     expect(useSWRMutation).toHaveBeenLastCalledWith(
       ["<unique-key>", "post", "/pet"],
