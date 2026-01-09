@@ -47,7 +47,10 @@ export default defineConfig({
             text: 'useQuery',
             link: '/use-query'
           },
-
+          {
+            text: 'useSuspenseQuery',
+            link: '/use-suspense-query'
+          },
         ]
       },
     ],
