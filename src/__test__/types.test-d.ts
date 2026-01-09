@@ -7,6 +7,7 @@ import { createImmutableHook } from "../immutable.js";
 import { createInfiniteHook } from "../infinite.js";
 import { createMutateHook } from "../mutate.js";
 import { createQueryHook } from "../query.js";
+import { createSuspenseQueryHook } from "../suspense.js";
 import type { TypesForRequest } from "../types.js";
 import type { components, paths } from "./fixtures/petstore.js";
 
@@ -30,6 +31,7 @@ const client = createClient<paths>();
 const useQuery = createQueryHook(client, "<unique-key>");
 const useImmutable = createImmutableHook(client, "<unique-key>");
 const useInfinite = createInfiniteHook(client, "<unique-key>");
+const useSuspenseQuery = createSuspenseQueryHook(client, "<unique-key>");
 const useMutate = createMutateHook(
   client,
   "<unique-key>",
@@ -189,6 +191,99 @@ describe("types", () => {
 
         it("in header params", () => {
           useImmutable("/pet/findByStatus", {
+            params: {
+              header: {
+                "X-Example": "test",
+                // @ts-expect-error extra property should be rejected
+                "Invalid-Header": "nope",
+              },
+            },
+          });
+        });
+      });
+    });
+
+    describe("useSuspenseQuery", () => {
+      it("accepts config without suspense option", () => {
+        useSuspenseQuery("/pet/findByStatus", null, { errorRetryCount: 1 });
+      });
+
+      it("does not accept suspense in config", () => {
+        useSuspenseQuery("/pet/findByStatus", null, {
+          errorRetryCount: 1,
+          // @ts-expect-error suspense should not be allowed in config
+          suspense: true,
+        });
+      });
+
+      describe("when init is required", () => {
+        it("does not accept path alone", () => {
+          // @ts-expect-error path is required
+          useSuspenseQuery("/pet/{petId}");
+        });
+
+        it("accepts path and init", () => {
+          useSuspenseQuery("/pet/{petId}", {
+            params: {
+              path: {
+                petId: 5,
+              },
+            },
+          });
+        });
+
+        it("accepts `null` init", () => {
+          useSuspenseQuery("/pet/{petId}", null);
+        });
+      });
+
+      describe("when init is not required", () => {
+        it("accepts path alone", () => {
+          useSuspenseQuery("/pet/findByStatus");
+        });
+
+        it("accepts path and init", () => {
+          useSuspenseQuery("/pet/findByStatus", {
+            params: {
+              query: {
+                status: "available",
+              },
+            },
+          });
+        });
+
+        it("accepts `null` init", () => {
+          useSuspenseQuery("/pet/findByStatus", null);
+        });
+      });
+
+      describe("rejects extra properties", () => {
+        it("in query params", () => {
+          useSuspenseQuery("/pet/findByStatus", {
+            params: {
+              query: {
+                status: "available",
+                // @ts-expect-error extra property should be rejected
+                invalid_property: "nope",
+              },
+            },
+          });
+        });
+
+        it("in path params", () => {
+          useSuspenseQuery("/pet/{petId}", {
+            params: {
+              path: {
+                petId: 5,
+                // @ts-expect-error extra property should be rejected
+                invalid_path_param: "nope",
+              },
+            },
+          });
+        });
+
+        it("in header params", () => {
+          useSuspenseQuery("/pet/findByStatus", {
             params: {
               header: {
                 "X-Example": "test",
@@ -418,6 +513,24 @@ describe("types", () => {
       });
     });
 
+    describe("useSuspenseQuery", () => {
+      it("returns data without undefined (suspense guarantees data)", () => {
+        const { data } = useSuspenseQuery("/pet/{petId}", {
+          params: {
+            path: {
+              petId: 5,
+            },
+          },
+        });
+        expectTypeOf(data).toEqualTypeOf<Pet>();
+      });
+
+      it("returns correct data for path alone", () => {
+        const { data } = useSuspenseQuery("/pet/findByStatus");
+        expectTypeOf(data).toEqualTypeOf<Pet[]>();
+      });
+    });
+
     describe("useInfinite", () => {
       it("returns correct data", () => {
         const { data } = useInfinite("/pet/findByStatus", (_index, _prev) => ({
@@ -488,6 +601,20 @@ describe("types", () => {
       });
     });
 
+    describe("useSuspenseQuery", () => {
+      it("returns correct error", () => {
+        const { error } = useSuspenseQuery("/pet/{petId}", {
+          params: {
+            path: {
+              petId: 5,
+            },
+          },
+        });
+
+        expectTypeOf(error).toEqualTypeOf<PetInvalid | undefined>();
+      });
+    });
+
     describe("useInfinite", () => {
       it("returns correct error", () => {
         const { error } = useInfinite("/pet/findByStatus", (_index, _prev) => ({
@@ -505,6 +632,7 @@ describe("types", () => {
     const useQuery = createQueryHook<paths, `${string}/${string}`, Key, Error>(client, uniqueKey);
     const useImmutable = createImmutableHook<paths, `${string}/${string}`, Key, Error>(client, uniqueKey);
     const useInfinite = createInfiniteHook<paths, `${string}/${string}`, Key, Error>(client, uniqueKey);
+    const useSuspenseQuery = createSuspenseQueryHook<paths, `${string}/${string}`, Key, Error>(client, uniqueKey);
 
     describe("useQuery", () => {
       it("returns correct error", () => {
@@ -541,6 +669,20 @@ describe("types", () => {
         }));
 
         expectTypeOf(error).toEqualTypeOf<PetStatusInvalid | Error | undefined>();
+      });
+    });
+
+    describe("useSuspenseQuery", () => {
+      it("returns correct error", () => {
+        const { error } = useSuspenseQuery("/pet/{petId}", {
+          params: {
+            path: {
+              petId: 5,
+            },
+          },
+        });
+
+        expectTypeOf(error).toEqualTypeOf<PetInvalid | Error | undefined>();
       });
     });
   });
