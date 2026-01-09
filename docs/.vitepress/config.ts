@@ -44,6 +44,10 @@ export default defineConfig({
             link: '/use-mutate'
           },
           {
+            text: 'mutate',
+            link: '/mutate'
+          },
+          {
             text: 'useQuery',
             link: '/use-query'
           },
