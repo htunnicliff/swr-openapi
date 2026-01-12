@@ -49,7 +49,7 @@
     "dev": "vitest --typecheck",
     "format": "prettier --write .",
     "lint": "pnpm run '/^lint:/'",
-    "lint:js": "oxlint --type-aware",
+    "lint:js": "oxlint --type-aware --quiet",
     "lint:ts": "tsc --noEmit",
     "lint:format": "prettier --check .",
     "prepack": "pnpm run build",
