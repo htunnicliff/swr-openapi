@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  test:
+  lint-test-build:
     name: CI
     runs-on: ubuntu-latest
     steps:
@@ -30,3 +30,6 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      - name: Build
+        run: pnpm build
