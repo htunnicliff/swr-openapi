@@ -1,3 +1,4 @@
+// oxlint-disable max-lines-per-function
 import createClient from "openapi-fetch";
 import type { ErrorResponseJSON } from "openapi-typescript-helpers";
 import * as SWR from "swr";
@@ -43,6 +44,23 @@ describe("types", () => {
     describe("useQuery", () => {
       it("accepts config", () => {
         useQuery("/pet/findByStatus", null, { errorRetryCount: 1 });
+      });
+
+      it("narrows return types for suspense", () => {
+        const { data } = useQuery(
+          "/pet/{petId}",
+          {
+            params: {
+              path: {
+                petId: 1123,
+              },
+            },
+          },
+          { suspense: true },
+        );
+
+        expectTypeOf(data).toEqualTypeOf<Pet>();
+        expectTypeOf(data).not.toBeNullable();
       });
 
       describe("when init is required", () => {
@@ -128,6 +146,23 @@ describe("types", () => {
     describe("useImmutable", () => {
       it("accepts config", () => {
         useImmutable("/pet/findByStatus", null, { errorRetryCount: 1 });
+      });
+
+      it("narrows return types for suspense", () => {
+        const { data } = useImmutable(
+          "/pet/{petId}",
+          {
+            params: {
+              path: {
+                petId: 1123,
+              },
+            },
+          },
+          { suspense: true },
+        );
+
+        expectTypeOf(data).toEqualTypeOf<Pet>();
+        expectTypeOf(data).not.toBeNullable();
       });
 
       describe("when init is required", () => {
