@@ -34,7 +34,6 @@ const useMutate = createMutateHook(
   // @ts-expect-error - not going to compare for most tests
   null,
 );
-// biome-ignore lint/correctness/useHookAtTopLevel: this is a test
 const mutate = useMutate();
 
 describe("createMutateHook", () => {

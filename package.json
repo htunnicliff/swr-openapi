@@ -82,7 +82,6 @@
     "@arethetypeswrong/cli": "0.18.2",
     "@types/lodash": "4.17.23",
     "@types/react": "18.3.24",
-    "biome": "0.3.3",
     "lodash": "4.17.21",
     "openapi-fetch": "0.15.0",
     "openapi-typescript": "7.10.1",
