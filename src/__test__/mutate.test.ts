@@ -99,11 +99,11 @@ describe("createMutateHook", () => {
       await mutate(["/pet/findByStatus"]);
       const keyMatcher = getKeyMatcher();
 
-      expect(keyMatcher(Array(0))).toBe(false);
-      expect(keyMatcher(Array(1))).toBe(false);
-      expect(keyMatcher(Array(2))).toBe(false);
-      expect(keyMatcher(Array(4))).toBe(false);
-      expect(keyMatcher(Array(5))).toBe(false);
+      expect(keyMatcher([])).toBe(false);
+      expect(keyMatcher([1])).toBe(false);
+      expect(keyMatcher([1, 2])).toBe(false);
+      expect(keyMatcher([1, 2, 3, 4])).toBe(false);
+      expect(keyMatcher([1, 2, 3, 4, 5])).toBe(false);
     });
 
     it("matches when prefix and path are equal and init isn't given", async () => {
