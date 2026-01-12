@@ -57,7 +57,7 @@ export function configureBaseQueryHook(useHook: SWRHook) {
       );
 
       // @ts-expect-error TODO: Improve internal config types
-      return useHook<Data, Error, Key>(key, fetcher, config);
+      return useHook<Data, Error, Key, Config>(key, fetcher, config);
     };
   };
 }
