@@ -1,5 +1,9 @@
 import type { Client } from "openapi-fetch";
-import type { MediaType, PathsWithMethod, RequiredKeysOf } from "openapi-typescript-helpers";
+import type {
+  MediaType,
+  PathsWithMethod,
+  RequiredKeysOf,
+} from "openapi-typescript-helpers";
 import { useCallback, useDebugValue, useMemo } from "react";
 import type { Fetcher, SWRHook } from "swr";
 import type { Exact } from "type-fest";
@@ -24,11 +28,17 @@ export function configureBaseQueryHook(useHook: SWRHook) {
       Config extends R["SWRConfig"],
     >(
       path: Path,
-      ...[init, config]: RequiredKeysOf<Init> extends never ? [(Init | null)?, Config?] : [Init | null, Config?]
+      ...[init, config]: RequiredKeysOf<Init> extends never
+        ? [(Init | null)?, Config?]
+        : [Init | null, Config?]
     ) {
+      // oxlint-disable-next-line no-unsafe-type-assertion
       useDebugValue(`${prefix} - ${path as string}`);
 
-      const key = useMemo(() => (init !== null ? ([prefix, path, init] as const) : null), [prefix, path, init]);
+      const key = useMemo(
+        () => (init !== null ? ([prefix, path, init] as const) : null),
+        [prefix, path, init],
+      );
 
       type Key = typeof key;
 
@@ -40,6 +50,7 @@ export function configureBaseQueryHook(useHook: SWRHook) {
           if (res.error) {
             throw res.error;
           }
+          // oxlint-disable-next-line no-unsafe-type-assertion
           return res.data as Data;
         },
         [client],

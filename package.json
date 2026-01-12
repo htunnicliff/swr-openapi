@@ -47,12 +47,13 @@
   "scripts": {
     "build": "unbuild",
     "dev": "vitest --typecheck",
-    "format": "biome format . --write",
-    "lint": "pnpm run lint:js && pnpm run lint:ts",
-    "lint:js": "biome check .",
+    "format": "prettier --write .",
+    "lint": "pnpm run '/^lint:/'",
+    "lint:js": "oxlint --type-aware --quiet",
     "lint:ts": "tsc --noEmit",
+    "lint:format": "prettier --check .",
     "prepack": "pnpm run build",
-    "test": "pnpm run test:js && pnpm run test:exports",
+    "test": "pnpm run '/^test:/'",
     "test:js": "vitest run --typecheck",
     "test:exports": "pnpm run build && attw --pack .",
     "prepublish": "pnpm run build",
@@ -81,10 +82,12 @@
     "@arethetypeswrong/cli": "0.18.2",
     "@types/lodash": "4.17.23",
     "@types/react": "18.3.24",
-    "biome": "0.3.3",
     "lodash": "4.17.21",
     "openapi-fetch": "0.15.0",
     "openapi-typescript": "7.10.1",
+    "oxlint": "1.38.0",
+    "oxlint-tsgolint": "^0.11.0",
+    "prettier": "^3.7.4",
     "react": "18.3.1",
     "swr": "2.3.8",
     "typescript": "5.9.3",
@@ -92,5 +95,6 @@
     "vitepress": "^1.6.4",
     "vitest": "4.0.16"
   },
+  "prettier": {},
   "packageManager": "pnpm@10.28.0+sha512.05df71d1421f21399e053fde567cea34d446fa02c76571441bfc1c7956e98e363088982d940465fd34480d4d90a0668bc12362f8aa88000a64e83d0b0e47be48"
 }

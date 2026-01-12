@@ -21,9 +21,9 @@ useSWRConfig.mockReturnValue({ mutate: swrMutate });
 type Pet = components["schemas"]["Pet"];
 type PetInvalid = ErrorResponseJSON<paths["/pet/{petId}"]["get"]>;
 type PetStatusInvalid = ErrorResponseJSON<paths["/pet/findByStatus"]["get"]>;
-expectTypeOf<Pet>().toMatchTypeOf<{ name: string }>();
-expectTypeOf<PetInvalid>().toMatchTypeOf<{ message: string } | undefined>();
-expectTypeOf<PetStatusInvalid>().toMatchTypeOf<{ message: string }>();
+expectTypeOf<Pet>().toExtend<{ name: string }>();
+expectTypeOf<PetInvalid>().toExtend<{ message: string } | undefined>();
+expectTypeOf<PetStatusInvalid>().toExtend<{ message: string }>();
 
 // Set up hooks
 const client = createClient<paths>();
@@ -36,7 +36,6 @@ const useMutate = createMutateHook(
   // @ts-expect-error - compare function not needed for these type tests
   null,
 );
-// biome-ignore lint/correctness/useHookAtTopLevel: this is a test
 const mutate = useMutate();
 
 describe("types", () => {
@@ -333,8 +332,8 @@ describe("types", () => {
       });
 
       describe("rejects extra properties", () => {
-        it("in path", () => {
-          mutate([
+        it("in path", async () => {
+          await mutate([
             "/pet/{petId}",
             {
               params: {
@@ -348,8 +347,8 @@ describe("types", () => {
           ]);
         });
 
-        it("in query params", () => {
-          mutate([
+        it("in query params", async () => {
+          await mutate([
             "/pet/findByStatus",
             {
               params: {
@@ -363,8 +362,8 @@ describe("types", () => {
           ]);
         });
 
-        it("in header params", () => {
-          mutate([
+        it("in header params", async () => {
+          await mutate([
             "/pet/findByStatus",
             {
               params: {
@@ -430,10 +429,13 @@ describe("types", () => {
 
     describe("useMutate -> mutate", () => {
       it("returns correct data", async () => {
-        const data = await mutate(["/pet/{petId}", { params: { path: { petId: 5 } } }], {
-          name: "Fido",
-          photoUrls: ["https://example.com"],
-        });
+        const data = await mutate(
+          ["/pet/{petId}", { params: { path: { petId: 5 } } }],
+          {
+            name: "Fido",
+            photoUrls: ["https://example.com"],
+          },
+        );
 
         expectTypeOf(data).toEqualTypeOf<Array<Pet | undefined>>();
       });
@@ -450,7 +452,9 @@ describe("types", () => {
       });
 
       it("accepts promises in data argument", async () => {
-        const data = Promise.resolve([{ name: "doggie", photoUrls: ["https://example.com"] }]);
+        const data = Promise.resolve([
+          { name: "doggie", photoUrls: ["https://example.com"] },
+        ]);
 
         const result = await mutate(["/pet/findByStatus"], data);
 
@@ -502,9 +506,22 @@ describe("types", () => {
   describe("custom error types", () => {
     const uniqueKey = "<unique-key>";
     type Key = typeof uniqueKey;
-    const useQuery = createQueryHook<paths, `${string}/${string}`, Key, Error>(client, uniqueKey);
-    const useImmutable = createImmutableHook<paths, `${string}/${string}`, Key, Error>(client, uniqueKey);
-    const useInfinite = createInfiniteHook<paths, `${string}/${string}`, Key, Error>(client, uniqueKey);
+    const useQuery = createQueryHook<paths, `${string}/${string}`, Key, Error>(
+      client,
+      uniqueKey,
+    );
+    const useImmutable = createImmutableHook<
+      paths,
+      `${string}/${string}`,
+      Key,
+      Error
+    >(client, uniqueKey);
+    const useInfinite = createInfiniteHook<
+      paths,
+      `${string}/${string}`,
+      Key,
+      Error
+    >(client, uniqueKey);
 
     describe("useQuery", () => {
       it("returns correct error", () => {
@@ -540,7 +557,9 @@ describe("types", () => {
           params: { query: { status: "available" } },
         }));
 
-        expectTypeOf(error).toEqualTypeOf<PetStatusInvalid | Error | undefined>();
+        expectTypeOf(error).toEqualTypeOf<
+          PetStatusInvalid | Error | undefined
+        >();
       });
     });
   });
@@ -553,7 +572,7 @@ describe("TypesForRequest", () => {
 
   describe("parity with openapi-fetch", () => {
     it("returns required init when params are required", () => {
-      expectTypeOf<FindPetsByTags["Init"]>().toMatchTypeOf<{
+      expectTypeOf<FindPetsByTags["Init"]>().toMatchObjectType<{
         params: {
           query: {
             tags: string[];
@@ -566,7 +585,7 @@ describe("TypesForRequest", () => {
     });
 
     it("returns optional init when no params are required", () => {
-      expectTypeOf<GetPet["Init"]>().toMatchTypeOf<
+      expectTypeOf<GetPet["Init"]>().toExtend<
         | undefined
         | {
             params: {
@@ -636,9 +655,15 @@ describe("TypesForRequest", () => {
   });
 
   it("returns correct SWR config", () => {
-    expectTypeOf<GetPet["SWRConfig"]>().toEqualTypeOf<SWR.SWRConfiguration<Pet, PetInvalid>>();
-    expectTypeOf<FindPetsByStatus["SWRConfig"]>().toEqualTypeOf<SWR.SWRConfiguration<Pet[], PetStatusInvalid>>();
-    expectTypeOf<FindPetsByTags["SWRConfig"]>().toEqualTypeOf<SWR.SWRConfiguration<Pet[], undefined>>();
+    expectTypeOf<GetPet["SWRConfig"]>().toEqualTypeOf<
+      SWR.SWRConfiguration<Pet, PetInvalid>
+    >();
+    expectTypeOf<FindPetsByStatus["SWRConfig"]>().toEqualTypeOf<
+      SWR.SWRConfiguration<Pet[], PetStatusInvalid>
+    >();
+    expectTypeOf<FindPetsByTags["SWRConfig"]>().toEqualTypeOf<
+      SWR.SWRConfiguration<Pet[], undefined>
+    >();
   });
 
   it("returns correct SWR response", () => {
@@ -646,7 +671,11 @@ describe("TypesForRequest", () => {
       SWR.SWRResponse<Pet, PetInvalid, SWR.SWRConfiguration<Pet, PetInvalid>>
     >();
     expectTypeOf<FindPetsByStatus["SWRResponse"]>().toEqualTypeOf<
-      SWR.SWRResponse<Pet[], PetStatusInvalid, SWR.SWRConfiguration<Pet[], PetStatusInvalid>>
+      SWR.SWRResponse<
+        Pet[],
+        PetStatusInvalid,
+        SWR.SWRConfiguration<Pet[], PetStatusInvalid>
+      >
     >();
     expectTypeOf<FindPetsByTags["SWRResponse"]>().toEqualTypeOf<
       SWR.SWRResponse<Pet[], undefined, SWR.SWRConfiguration<Pet[], undefined>>

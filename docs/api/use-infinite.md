@@ -15,15 +15,8 @@ const client = createClient<paths>(/* ... */);
 
 const useInfinite = createInfiniteHook(client, "my-api");
 
-const {
-  data,
-  error,
-  isLoading,
-  isValidating,
-  mutate,
-  size,
-  setSize
-} = useInfinite(path, getInit, config);
+const { data, error, isLoading, isValidating, mutate, size, setSize } =
+  useInfinite(path, getInit, config);
 ```
 
 ## API
@@ -146,7 +139,6 @@ function useInfinite(path, getInit, config) {
   return useSWRInfinite(getKey, fetcher, config);
 }
 ```
-
 
 [oai-fetch-options]: https://openapi-ts.pages.dev/openapi-fetch/api#fetch-options
 [swr-api]: https://swr.vercel.app/docs/api
