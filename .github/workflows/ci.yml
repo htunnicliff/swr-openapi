@@ -26,13 +26,7 @@ jobs:
       - run: pnpm install
 
       - name: Lint
-        run: pnpm lint:js
-
-      - name: Check types
-        run: pnpm lint:ts
+        run: pnpm lint
 
       - name: Test
-        run: pnpm test:js
-
-      - name: Check exports
-        run: pnpm test:exports
+        run: pnpm test
