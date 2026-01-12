@@ -21,9 +21,9 @@ useSWRConfig.mockReturnValue({ mutate: swrMutate });
 type Pet = components["schemas"]["Pet"];
 type PetInvalid = ErrorResponseJSON<paths["/pet/{petId}"]["get"]>;
 type PetStatusInvalid = ErrorResponseJSON<paths["/pet/findByStatus"]["get"]>;
-expectTypeOf<Pet>().toMatchTypeOf<{ name: string }>();
-expectTypeOf<PetInvalid>().toMatchTypeOf<{ message: string } | undefined>();
-expectTypeOf<PetStatusInvalid>().toMatchTypeOf<{ message: string }>();
+expectTypeOf<Pet>().toExtend<{ name: string }>();
+expectTypeOf<PetInvalid>().toExtend<{ message: string } | undefined>();
+expectTypeOf<PetStatusInvalid>().toExtend<{ message: string }>();
 
 // Set up hooks
 const client = createClient<paths>();
@@ -572,7 +572,7 @@ describe("TypesForRequest", () => {
 
   describe("parity with openapi-fetch", () => {
     it("returns required init when params are required", () => {
-      expectTypeOf<FindPetsByTags["Init"]>().toMatchTypeOf<{
+      expectTypeOf<FindPetsByTags["Init"]>().toMatchObjectType<{
         params: {
           query: {
             tags: string[];
@@ -585,7 +585,7 @@ describe("TypesForRequest", () => {
     });
 
     it("returns optional init when no params are required", () => {
-      expectTypeOf<GetPet["Init"]>().toMatchTypeOf<
+      expectTypeOf<GetPet["Init"]>().toExtend<
         | undefined
         | {
             params: {
