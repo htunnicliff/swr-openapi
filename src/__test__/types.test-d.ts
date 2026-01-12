@@ -332,8 +332,8 @@ describe("types", () => {
       });
 
       describe("rejects extra properties", () => {
-        it("in path", () => {
-          mutate([
+        it("in path", async () => {
+          await mutate([
             "/pet/{petId}",
             {
               params: {
@@ -347,8 +347,8 @@ describe("types", () => {
           ]);
         });
 
-        it("in query params", () => {
-          mutate([
+        it("in query params", async () => {
+          await mutate([
             "/pet/findByStatus",
             {
               params: {
@@ -362,8 +362,8 @@ describe("types", () => {
           ]);
         });
 
-        it("in header params", () => {
-          mutate([
+        it("in header params", async () => {
+          await mutate([
             "/pet/findByStatus",
             {
               params: {

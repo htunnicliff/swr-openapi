@@ -25,6 +25,7 @@ const getKeyMatcher = () => {
   if (swrMutate.mock.calls.length === 0) {
     throw new Error("swr `mutate` not called");
   }
+  // oxlint-disable-next-line no-unsafe-type-assertion
   return swrMutate.mock.lastCall![0] as ScopedMutator;
 };
 

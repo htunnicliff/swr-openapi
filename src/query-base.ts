@@ -32,6 +32,7 @@ export function configureBaseQueryHook(useHook: SWRHook) {
         ? [(Init | null)?, Config?]
         : [Init | null, Config?]
     ) {
+      // oxlint-disable-next-line no-unsafe-type-assertion
       useDebugValue(`${prefix} - ${path as string}`);
 
       const key = useMemo(
@@ -49,6 +50,7 @@ export function configureBaseQueryHook(useHook: SWRHook) {
           if (res.error) {
             throw res.error;
           }
+          // oxlint-disable-next-line no-unsafe-type-assertion
           return res.data as Data;
         },
         [client],

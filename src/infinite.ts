@@ -55,6 +55,7 @@ export function createInfiniteHook<
     type Key = [Prefix, Path, Init | undefined] | null;
     type KeyLoader = SWRInfiniteKeyLoader<Data, Key>;
 
+    // oxlint-disable-next-line no-unsafe-type-assertion
     useDebugValue(`${prefix} - ${path as string}`);
 
     const fetcher: SWRInfiniteFetcher<Data, KeyLoader> = useCallback(
@@ -64,6 +65,7 @@ export function createInfiniteHook<
         if (res.error) {
           throw res.error;
         }
+        // oxlint-disable-next-line no-unsafe-type-assertion
         return res.data as Data;
       },
       [client],
