@@ -40,12 +40,16 @@ export default defineConfig({
             link: '/use-infinite'
           },
           {
-            text: 'useMutate',
-            link: '/use-mutate'
+            text: 'useMutation',
+            link: '/use-mutation'
           },
           {
             text: 'useQuery',
             link: '/use-query'
+          },
+          {
+            text: 'useRevalidate',
+            link: '/use-revalidate'
           },
 
         ]

@@ -5,7 +5,8 @@ import type { ScopedMutator } from "swr/_internal";
 import { describe, expectTypeOf, it, vi } from "vitest";
 import { createImmutableHook } from "../immutable.js";
 import { createInfiniteHook } from "../infinite.js";
-import { createMutateHook } from "../mutate.js";
+import { createMutationHook } from "../mutation.js";
+import { createRevalidateHook } from "../revalidate.js";
 import { createQueryHook } from "../query.js";
 import type { TypesForRequest } from "../types.js";
 import type { components, paths } from "./fixtures/petstore.js";
@@ -30,14 +31,15 @@ const client = createClient<paths>();
 const useQuery = createQueryHook(client, "<unique-key>");
 const useImmutable = createImmutableHook(client, "<unique-key>");
 const useInfinite = createInfiniteHook(client, "<unique-key>");
-const useMutate = createMutateHook(
+const useMutation = createMutationHook(client, "<unique-key>");
+const useRevalidate = createRevalidateHook(
   client,
   "<unique-key>",
   // @ts-expect-error - compare function not needed for these type tests
   null,
 );
 // biome-ignore lint/correctness/useHookAtTopLevel: this is a test
-const mutate = useMutate();
+const revalidate = useRevalidate();
 
 describe("types", () => {
   describe("key types", () => {
@@ -271,13 +273,13 @@ describe("types", () => {
       });
     });
 
-    describe("useMutate -> mutate", () => {
+    describe("useRevalidate -> revalidate", () => {
       it("accepts path alone", async () => {
-        await mutate(["/pet/{petId}"]);
+        await revalidate(["/pet/{petId}"]);
       });
 
       it("accepts path and init", async () => {
-        await mutate([
+        await revalidate([
           "/pet/{petId}",
           {
             params: {
@@ -290,11 +292,11 @@ describe("types", () => {
       });
 
       it("accepts partial init", async () => {
-        await mutate(["/pet/{petId}", { params: {} }]);
+        await revalidate(["/pet/{petId}", { params: {} }]);
       });
 
       it("does not accept `null` init", async () => {
-        await mutate([
+        await revalidate([
           "/pet/{petId}",
           // @ts-expect-error null not accepted
           null,
@@ -303,11 +305,11 @@ describe("types", () => {
 
       describe("when init is not required", () => {
         it("accepts path alone", async () => {
-          await mutate(["/pet/{petId}"]);
+          await revalidate(["/pet/{petId}"]);
         });
 
         it("accepts path and init", async () => {
-          await mutate([
+          await revalidate([
             "/pet/{petId}",
             {
               params: {
@@ -320,11 +322,11 @@ describe("types", () => {
         });
 
         it("accepts partial init", async () => {
-          await mutate(["/pet/{petId}", { params: {} }]);
+          await revalidate(["/pet/{petId}", { params: {} }]);
         });
 
         it("does not accept `null` init", async () => {
-          await mutate([
+          await revalidate([
             "/pet/{petId}",
             // @ts-expect-error null not accepted
             null,
@@ -334,7 +336,7 @@ describe("types", () => {
 
       describe("rejects extra properties", () => {
         it("in path", () => {
-          mutate([
+          revalidate([
             "/pet/{petId}",
             {
               params: {
@@ -349,7 +351,7 @@ describe("types", () => {
         });
 
         it("in query params", () => {
-          mutate([
+          revalidate([
             "/pet/findByStatus",
             {
               params: {
@@ -364,7 +366,7 @@ describe("types", () => {
         });
 
         it("in header params", () => {
-          mutate([
+          revalidate([
             "/pet/findByStatus",
             {
               params: {
@@ -376,6 +378,38 @@ describe("types", () => {
               },
             },
           ]);
+        });
+      });
+    });
+
+    describe("useMutation", () => {
+      it("returns mutation response with trigger function", () => {
+        const { trigger, isMutating } = useMutation("post", "/pet");
+        expectTypeOf(trigger).toBeFunction();
+        expectTypeOf(isMutating).toBeBoolean();
+      });
+
+      it("trigger accepts init with body", async () => {
+        const { trigger } = useMutation("post", "/pet");
+        await trigger({
+          body: { name: "doggie", photoUrls: ["https://example.com/photo.jpg"] },
+        });
+      });
+
+      it("trigger accepts init with path params", async () => {
+        const { trigger } = useMutation("delete", "/pet/{petId}");
+        await trigger({
+          params: { path: { petId: 123 } },
+        });
+      });
+
+      it("trigger accepts init with path params and optional header", async () => {
+        const { trigger } = useMutation("delete", "/pet/{petId}");
+        await trigger({
+          params: {
+            path: { petId: 123 },
+            header: { api_key: "secret" },
+          },
         });
       });
     });
@@ -428,9 +462,9 @@ describe("types", () => {
       });
     });
 
-    describe("useMutate -> mutate", () => {
+    describe("useRevalidate -> revalidate", () => {
       it("returns correct data", async () => {
-        const data = await mutate(["/pet/{petId}", { params: { path: { petId: 5 } } }], {
+        const data = await revalidate(["/pet/{petId}", { params: { path: { petId: 5 } } }], {
           name: "Fido",
           photoUrls: ["https://example.com"],
         });
@@ -440,7 +474,7 @@ describe("types", () => {
 
       describe("when required init is not provided", () => {
         it("returns correct data", async () => {
-          const data = await mutate(["/pet/{petId}"], {
+          const data = await revalidate(["/pet/{petId}"], {
             name: "Fido",
             photoUrls: ["https://example.com"],
           });
@@ -452,7 +486,7 @@ describe("types", () => {
       it("accepts promises in data argument", async () => {
         const data = Promise.resolve([{ name: "doggie", photoUrls: ["https://example.com"] }]);
 
-        const result = await mutate(["/pet/findByStatus"], data);
+        const result = await revalidate(["/pet/findByStatus"], data);
 
         expectTypeOf(result).toEqualTypeOf<(Pet[] | undefined)[]>();
       });

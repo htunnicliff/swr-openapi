@@ -1,19 +1,19 @@
 ---
-title: useMutate
+title: useRevalidate
 ---
 
 # {{ $frontmatter.title }}
 
-`useMutate` is a wrapper around SWR's [global mutate][swr-global-mutate] function. It provides a type-safe mechanism for updating and revalidating SWR's client-side cache for specific endpoints.
+`useRevalidate` is a wrapper around SWR's [global mutate][swr-global-mutate] function. It provides a type-safe mechanism for updating and revalidating SWR's client-side cache for specific endpoints.
 
-Like global mutate, this mutate wrapper accepts three parameters: `key`, `data`, and `options`. The latter two parameters are identical to those in _bound mutate_. `key` can be either a path alone, or a path with fetch options.
+Like global mutate, this revalidate wrapper accepts three parameters: `key`, `data`, and `options`. The latter two parameters are identical to those in _bound mutate_. `key` can be either a path alone, or a path with fetch options.
 
 The level of specificity used when defining the key will determine which cached requests are updated. If only a path is provided, any cached request using that path will be updated. If fetch options are included in the key, the [`compare`](./hook-builders.md#compare) function will determine if a cached request's fetch options match the key's fetch options.
 
 ```ts
-const mutate = useMutate();
+const revalidate = useRevalidate();
 
-await mutate([path, init], data, options);
+await revalidate([path, init], data, options);
 ```
 
 ## API
@@ -38,7 +38,7 @@ await mutate([path, init], data, options);
 ## How It Works
 
 ```ts
-function useMutate() {
+function useRevalidate() {
   const { mutate } = useSWRConfig();
   return useCallback(
     ([path, init], data, opts) => {
