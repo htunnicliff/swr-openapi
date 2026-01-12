@@ -45,7 +45,6 @@ function MyComponent() {
 
   return <div>{data.title}</div>;
 }
-
 ```
 
 :::
@@ -74,7 +73,6 @@ npx openapi-typescript ./path/to/api/v1.yaml -o ./src/lib/api/v1.d.ts
 ## Basic Usage
 
 Once types have been generated from your schema, you can create a [fetch client](https://openapi-ts.dev/openapi-fetch/) and export wrapped `swr` hooks.
-
 
 Wrapper hooks are provided 1:1 for each hook exported by SWR. Check out the other sections of this documentation to learn more about each one.
 
@@ -105,16 +103,17 @@ export const useMutate = createMutateHook(
   isMatch, // Or any comparision function
 );
 ```
+
 :::
 
 ::: tip
 You can find more information about `createClient` on the [openapi-fetch documentation](https://openapi-ts.dev/openapi-fetch/api#createclient).
 :::
 
-
 Then, import these hooks in your components:
 
 ::: code-group
+
 ```tsx [src/my-component.tsx]
 import { useQuery } from "./my-api";
 
@@ -135,4 +134,5 @@ function MyComponent() {
   return <div>{data.title}</div>;
 }
 ```
+
 :::

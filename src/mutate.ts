@@ -34,11 +34,10 @@ export type CompareFn = (init: any, partialInit: any) => boolean;
  * );
  * ```
  */
-export function createMutateHook<Paths extends {}, IMediaType extends MediaType>(
-  client: Client<Paths, IMediaType>,
-  prefix: string,
-  compare: CompareFn,
-) {
+export function createMutateHook<
+  Paths extends {},
+  IMediaType extends MediaType,
+>(client: Client<Paths, IMediaType>, prefix: string, compare: CompareFn) {
   return function useMutate() {
     const { mutate: swrMutate } = useSWRConfig();
 

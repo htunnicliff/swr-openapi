@@ -47,7 +47,11 @@ export function createInfiniteHook<
     Data extends R["Data"],
     Error extends R["Error"] | FetcherError,
     Config extends SWRInfiniteConfiguration<Data, Error>,
-  >(path: Path, getInit: SWRInfiniteKeyLoader<Data, Init | null>, config?: Config) {
+  >(
+    path: Path,
+    getInit: SWRInfiniteKeyLoader<Data, Init | null>,
+    config?: Config,
+  ) {
     type Key = [Prefix, Path, Init | undefined] | null;
     type KeyLoader = SWRInfiniteKeyLoader<Data, Key>;
 
