@@ -45,9 +45,11 @@ export function configureBaseQueryHook(useHook: SWRHook) {
       // TODO: Lift up fetcher to and remove useCallback
       const fetcher: Fetcher<Data, Key> = useCallback(
         async ([_, path, init]) => {
-          // Type assertion needed: init from key destructuring is Init | undefined,
-          // but client.GET expects a rest parameter InitParam<MaybeOptionalInit<...>>
-          // Runtime behavior is correct; this is a type system limitation
+          // Type assertion needed: init from key destructuring has type Init | undefined,
+          // but client.GET expects ...init: InitParam<MaybeOptionalInit<...>> as a rest parameter.
+          // InitParam is a tuple type [(Init & { [key: string]: unknown })?] or [Init & { [key: string]: unknown }].
+          // TypeScript cannot automatically convert our single value to the expected rest parameter tuple.
+          // Runtime behavior is correct; this is a type system limitation.
           // oxlint-disable-next-line no-unsafe-type-assertion
           const res = await client.GET(path, init as any);
           if (res.error) {
