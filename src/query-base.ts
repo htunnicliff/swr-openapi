@@ -45,6 +45,9 @@ export function configureBaseQueryHook(useHook: SWRHook) {
       // TODO: Lift up fetcher to and remove useCallback
       const fetcher: Fetcher<Data, Key> = useCallback(
         async ([_, path, init]) => {
+          // Type assertion needed: init from key destructuring is Init | undefined,
+          // but client.GET expects a rest parameter InitParam<MaybeOptionalInit<...>>
+          // Runtime behavior is correct; this is a type system limitation
           // oxlint-disable-next-line no-unsafe-type-assertion
           const res = await client.GET(path, init as any);
           if (res.error) {
@@ -56,6 +59,8 @@ export function configureBaseQueryHook(useHook: SWRHook) {
         [client],
       );
 
+      // Type assertion needed: config type from generic parameter doesn't exactly
+      // match the fetcher-aware SWRConfiguration type that useHook expects
       // oxlint-disable-next-line no-unsafe-type-assertion
       return useHook<Data, Error, Key>(key, fetcher, config as any);
     };

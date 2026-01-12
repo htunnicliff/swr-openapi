@@ -60,6 +60,9 @@ export function createInfiniteHook<
 
     const fetcher: SWRInfiniteFetcher<Data, KeyLoader> = useCallback(
       async ([_, path, init]) => {
+        // Type assertion needed: init from key destructuring is Init | undefined,
+        // but client.GET expects a rest parameter InitParam<MaybeOptionalInit<...>>
+        // Runtime behavior is correct; this is a type system limitation
         // oxlint-disable-next-line no-unsafe-type-assertion
         const res = await client.GET(path, init as any);
         if (res.error) {
