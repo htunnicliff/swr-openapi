@@ -60,8 +60,8 @@ export function createInfiniteHook<
 
     const fetcher: SWRInfiniteFetcher<Data, KeyLoader> = useCallback(
       async ([_, path, init]) => {
-        // @ts-expect-error TODO: Improve internal init types
-        const res = await client.GET(path, init);
+        // oxlint-disable-next-line no-unsafe-type-assertion
+        const res = await client.GET(path, init as any);
         if (res.error) {
           throw res.error;
         }

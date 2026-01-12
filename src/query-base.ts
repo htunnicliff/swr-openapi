@@ -45,8 +45,8 @@ export function configureBaseQueryHook(useHook: SWRHook) {
       // TODO: Lift up fetcher to and remove useCallback
       const fetcher: Fetcher<Data, Key> = useCallback(
         async ([_, path, init]) => {
-          // @ts-expect-error TODO: Improve internal init types
-          const res = await client.GET(path, init);
+          // oxlint-disable-next-line no-unsafe-type-assertion
+          const res = await client.GET(path, init as any);
           if (res.error) {
             throw res.error;
           }
@@ -56,8 +56,8 @@ export function configureBaseQueryHook(useHook: SWRHook) {
         [client],
       );
 
-      // @ts-expect-error TODO: Improve internal config types
-      return useHook<Data, Error, Key>(key, fetcher, config);
+      // oxlint-disable-next-line no-unsafe-type-assertion
+      return useHook<Data, Error, Key>(key, fetcher, config as any);
     };
   };
 }
