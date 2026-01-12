@@ -63,13 +63,12 @@ export function createInfiniteHook<
         const [_, path, init] = key;
         // TypeScript cannot properly narrow the type of init when destructured from the key,
         // so we handle both cases explicitly: with init and without init
-        // oxlint-disable-next-line no-unsafe-type-assertion, no-unnecessary-type-assertion
         const res =
           init !== undefined
             ? // oxlint-disable-next-line no-unsafe-type-assertion
               await client.GET(path, init as never)
-            : // oxlint-disable-next-line no-unsafe-type-assertion, no-unnecessary-type-assertion
-              await (client.GET(path) as ReturnType<
+            : // oxlint-disable-next-line no-unsafe-type-assertion
+              await ((client.GET as any)(path) as ReturnType<
                 typeof client.GET<Path, never>
               >);
         if (res.error) {
