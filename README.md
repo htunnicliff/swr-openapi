@@ -55,7 +55,6 @@ function MyComponent() {
 
   return <div>{data.title}</div>;
 }
-
 ```
 
 ## 📓 Docs

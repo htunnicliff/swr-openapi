@@ -34,7 +34,6 @@ await mutate([path, init], data, options);
 
 > SWR's `mutate` signature specifies that when a matcher function is used, the return type will be [an array](https://github.com/vercel/swr/blob/1585a3e37d90ad0df8097b099db38f1afb43c95d/src/_internal/types.ts#L426). Since our wrapper uses a key matcher function, it will always return an array type.
 
-
 ## How It Works
 
 ```ts

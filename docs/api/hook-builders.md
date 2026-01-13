@@ -8,7 +8,6 @@ Hook builders initialize `useQuery`, `useImmutate`, `useInfinite`, and `useMutat
 
 Each builder function accepts an instance of a [fetch client](https://openapi-ts.dev/openapi-fetch/api) and a prefix unique to that client.
 
-
 ::: tip
 
 Prefixes ensure that `swr` will avoid caching requests from different APIs when requests happen to match (e.g. `GET /health` for "API A" and `GET /health` for "API B").

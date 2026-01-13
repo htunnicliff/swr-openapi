@@ -32,8 +32,6 @@ const { data, error, isLoading, isValidating, mutate } = useQuery(
   - `null` to skip the request (see [SWR Conditional Fetching][swr-conditional-fetching]).
 - `config`: (_optional_) [SWR options][swr-options].
 
-
-
 ### Returns
 
 - An [SWR response][swr-response].
@@ -63,7 +61,6 @@ function useQuery(path, ...[init, config]) {
   );
 }
 ```
-
 
 [oai-fetch-options]: https://openapi-ts.pages.dev/openapi-fetch/api#fetch-options
 [swr-options]: https://swr.vercel.app/docs/api#options

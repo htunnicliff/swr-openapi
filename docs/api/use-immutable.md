@@ -30,6 +30,5 @@ Identical to `useQuery` [parameters](./use-query.md#parameters).
 
 Identical to `useQuery` [returns](./use-query.md#returns).
 
-
 [swr-disable-auto-revalidate]: https://swr.vercel.app/docs/revalidation.en-US#disable-automatic-revalidations
 [swr-api]: https://swr.vercel.app/docs/api

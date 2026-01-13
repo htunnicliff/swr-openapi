@@ -26,6 +26,7 @@ const getKeyMatcher = () => {
   if (swrMutate.mock.calls.length === 0) {
     throw new Error("swr `mutate` not called");
   }
+  // oxlint-disable-next-line no-unsafe-type-assertion
   return swrMutate.mock.lastCall![0] as ScopedMutator;
 };
 
@@ -49,7 +50,6 @@ const useMutate = createMutateHook(
   // @ts-expect-error - not going to compare for most tests
   null,
 );
-// biome-ignore lint/correctness/useHookAtTopLevel: this is a test
 const mutate = useMutate();
 
 describe("createMutateHook", () => {
@@ -115,11 +115,11 @@ describe("createMutateHook", () => {
       await mutate(["/pet/findByStatus"]);
       const keyMatcher = getKeyMatcher();
 
-      expect(keyMatcher(Array(0))).toBe(false);
-      expect(keyMatcher(Array(1))).toBe(false);
-      expect(keyMatcher(Array(2))).toBe(false);
-      expect(keyMatcher(Array(4))).toBe(false);
-      expect(keyMatcher(Array(5))).toBe(false);
+      expect(keyMatcher([])).toBe(false);
+      expect(keyMatcher([1])).toBe(false);
+      expect(keyMatcher([1, 2])).toBe(false);
+      expect(keyMatcher([1, 2, 3, 4])).toBe(false);
+      expect(keyMatcher([1, 2, 3, 4, 5])).toBe(false);
     });
 
     it("matches when prefix and path are equal and init isn't given", async () => {
@@ -130,10 +130,14 @@ describe("createMutateHook", () => {
       expect(keyMatcher(["<unique-key>", "/pet/findByStatus"])).toBe(true);
 
       // Same path, init ignored
-      expect(keyMatcher(["<unique-key>", "/pet/findByStatus", { some: "init" }])).toBe(true);
+      expect(
+        keyMatcher(["<unique-key>", "/pet/findByStatus", { some: "init" }]),
+      ).toBe(true);
 
       // Same path, undefined init ignored
-      expect(keyMatcher(["<unique-key>", "/pet/findByStatus", undefined])).toBe(true);
+      expect(keyMatcher(["<unique-key>", "/pet/findByStatus", undefined])).toBe(
+        true,
+      );
     });
 
     it("returns compare result when prefix and path are equal and init is given", async () => {
