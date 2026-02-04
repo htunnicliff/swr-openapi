@@ -89,7 +89,7 @@
     "oxlint-tsgolint": "0.11.4",
     "prettier": "3.8.1",
     "react": "18.3.1",
-    "swr": "2.3.8",
+    "swr": "2.4.0",
     "typescript": "5.9.3",
     "unbuild": "3.6.1",
     "vitepress": "1.6.4",
