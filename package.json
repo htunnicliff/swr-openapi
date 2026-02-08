@@ -81,7 +81,7 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.2",
     "@types/lodash": "4.17.23",
-    "@types/react": "18.3.27",
+    "@types/react": "18.3.28",
     "lodash": "4.17.23",
     "openapi-fetch": "0.15.0",
     "openapi-typescript": "7.10.1",
