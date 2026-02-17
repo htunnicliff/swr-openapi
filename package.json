@@ -75,7 +75,7 @@
     }
   },
   "dependencies": {
-    "openapi-typescript-helpers": "^0.0.15",
+    "openapi-typescript-helpers": "^0.1.0",
     "type-fest": "^5.0.0"
   },
   "devDependencies": {
