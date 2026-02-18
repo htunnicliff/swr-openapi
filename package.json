@@ -86,7 +86,7 @@
     "openapi-fetch": "0.17.0",
     "openapi-typescript": "7.13.0",
     "oxlint": "1.47.0",
-    "oxlint-tsgolint": "0.12.2",
+    "oxlint-tsgolint": "0.13.0",
     "prettier": "3.8.1",
     "react": "18.3.1",
     "swr": "2.4.0",
