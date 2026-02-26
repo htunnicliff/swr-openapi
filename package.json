@@ -80,7 +80,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.2",
-    "@types/lodash": "4.17.23",
+    "@types/lodash": "4.17.24",
     "@types/react": "18.3.28",
     "lodash": "4.17.23",
     "openapi-fetch": "0.17.0",
