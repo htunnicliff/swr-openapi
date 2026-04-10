@@ -85,7 +85,7 @@
     "lodash": "4.18.1",
     "openapi-fetch": "0.17.0",
     "openapi-typescript": "7.13.0",
-    "oxlint": "1.58.0",
+    "oxlint": "1.59.0",
     "oxlint-tsgolint": "0.20.0",
     "prettier": "3.8.1",
     "react": "18.3.1",
